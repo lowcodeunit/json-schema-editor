@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "deploy": "npm version patch && npm run deploy:all",
-    "deploy:all": "",
+    "deploy:all": "npm run deploy:json-schema-editor",
     "deploy:json-schema-editor": "npm version patch --prefix projects/json-schema-editor && ng build json-schema-editor && npm publish ./dist/json-schema-editor --access public",
     "ng": "ng",
     "start": "ng serve",
