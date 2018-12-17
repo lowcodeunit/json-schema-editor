@@ -1,6 +1,6 @@
 {
   "name": "@lowcodeunit/json-schema-editor",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "deploy": "npm version patch && npm run deploy:all",
     "deploy:all": "npm run deploy:json-schema-editor",
