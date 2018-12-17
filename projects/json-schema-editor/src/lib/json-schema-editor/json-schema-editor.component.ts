@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ForgeJSONSchema } from '@lowcodeunit/core';
+import { ForgeJSONSchema } from '@lcu/apps';
 
 @Component({
 	selector: 'json-schema-editor',

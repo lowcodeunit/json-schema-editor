@@ -1,4 +1,4 @@
-import { ForgeJSONSchema } from '@lowcodeunit/core';
+import { ForgeJSONSchema } from '@lcu/apps';
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 

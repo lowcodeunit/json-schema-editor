@@ -4,7 +4,7 @@ import { JSONSchemaFormControlsComponent } from './json-schema-form-controls/jso
 import { DndModule } from '@beyerleinf/ngx-dnd';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatCardModule, MatSelectModule, MatIconModule, MatSlideToggleModule } from '@angular/material';
-import { FathymSharedModule } from '@lowcodeunit/common';
+import { FathymSharedModule } from '@lcu/hosting';
 
 @NgModule({
   declarations: [
