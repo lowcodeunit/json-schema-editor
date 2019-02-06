@@ -3,191 +3,194 @@ import { ActivatedRoute } from '@angular/router';
 import { ForgeJSONSchema } from '@lcu/apps';
 
 @Component({
-	selector: 'json-schema-editor',
-	templateUrl: './json-schema-editor.component.html',
-	styleUrls: ['./json-schema-editor.component.scss']
+  selector: 'json-schema-editor',
+  templateUrl: './json-schema-editor.component.html',
+  styleUrls: ['./json-schema-editor.component.scss']
 })
 export class JSONSchemaEditorComponent implements OnInit {
-	//	Fields
+  // 	Fields
 
-	//	Properties
-	public CurrentlyEditingSettingsFor: ForgeJSONSchema;
+  // 	Properties
+  public CurrentlyEditingSettingsFor: ForgeJSONSchema;
 
-	@Input('hide-schema-title')
-	public HideSchemaTitle: boolean;
+  @Input('hide-schema-title')
+  public HideSchemaTitle: boolean;
 
-	@Input('hide-note')
-	public HideNote: boolean;
+  @Input('hide-note')
+  public HideNote: boolean;
 
-	@Input('nested')
-	public Nested: boolean;
+  @Input('nested')
+  public Nested: boolean;
 
-	@Input('parent-title')
-	public ParentTitle: string;
+  @Input('parent-title')
+  public ParentTitle: string;
 
-	@Input('prop-key')
-	public PropertyKey: string;
+  @Input('prop-key')
+  public PropertyKey: string;
 
-	@Output('schemaChange')
-	public Changed: EventEmitter<ForgeJSONSchema>;
+  @Output('schemaChange')
+  public Changed: EventEmitter<ForgeJSONSchema>;
 
-	@Output('propertyAdded')
-	public PropertyAdded: EventEmitter<ForgeJSONSchema>;
+  @Output('propertyAdded')
+  public PropertyAdded: EventEmitter<ForgeJSONSchema>;
 
-	@Output('propertyTypeChanged')
-	public PropertyTypeChanged: EventEmitter<string>;
+  @Output('propertyTypeChanged')
+  public PropertyTypeChanged: EventEmitter<string>;
 
-	@Output('propertyDeleted')
-	public PropertyDeleted: EventEmitter<ForgeJSONSchema>;
+  @Output('propertyDeleted')
+  public PropertyDeleted: EventEmitter<ForgeJSONSchema>;
 
-	@Input('schema')
-	public Schema: ForgeJSONSchema;
+  @Input('schema')
+  public Schema: ForgeJSONSchema;
 
-	@Input('schema-lookup-placeholder')
-	public SchemaLookupPlaceholder: string;
+  @Input('schema-lookup-placeholder')
+  public SchemaLookupPlaceholder: string;
 
-	@Input('show-validations')
-	public ShowValidations: boolean;
+  @Input('show-validations')
+  public ShowValidations: boolean;
 
-	public SortedProperties: string[];
+  public SortedProperties: string[];
 
-	//	Constructors
-	constructor() {
-		this.Changed = new EventEmitter();
+  // 	Constructors
+  constructor() {
+    this.Changed = new EventEmitter();
 
-		this.PropertyAdded = new EventEmitter();
+    this.PropertyAdded = new EventEmitter();
 
-		this.PropertyTypeChanged = new EventEmitter();
+    this.PropertyTypeChanged = new EventEmitter();
 
-		this.PropertyDeleted = new EventEmitter();
+    this.PropertyDeleted = new EventEmitter();
 
-		this.SchemaLookupPlaceholder = "Schema Type Lookup";
-	}
+    this.SchemaLookupPlaceholder = 'Schema Type Lookup';
+  }
 
-	//	Runtime
-	public ngOnInit() {
-		if (!this.Schema) {
-			this.Schema = <ForgeJSONSchema>{ properties: {} };
+  // 	Runtime
+  public ngOnInit() {
+    if (!this.Schema) {
+      this.Schema = <ForgeJSONSchema>{ properties: {} };
 
-			this.EmitChange();
-		}
+      this.EmitChange();
+    }
 
-		if (!this.Schema.properties) {
-			this.Schema.properties = {};
+    if (!this.Schema.properties) {
+      this.Schema.properties = {};
 
-			this.EmitChange();
-		}
+      this.EmitChange();
+    }
 
-		this.Schema.type = 'object';
+    this.Schema.type = 'object';
 
-		if (this.Nested)
-			this.Schema.title = this.ParentTitle;
+    if (this.Nested) {
+      this.Schema.title = this.ParentTitle;
+    }
 
-		var self = this;
+    const self = this;
 
-		this.SortedProperties = [];
+    this.SortedProperties = [];
 
-		this.PivotProperties().forEach(function (prop) {
-			self.SortedProperties.push(prop.id);
-		});
-	}
+    this.PivotProperties().forEach(function(prop) {
+      self.SortedProperties.push(prop.id);
+    });
+  }
 
-	//	API Methods
-	public AddProperty() {
-		var prop = <ForgeJSONSchema>{
-			oneOf: [<ForgeJSONSchema>{}]
-		};
+  // 	API Methods
+  public AddProperty() {
+    const prop = <ForgeJSONSchema>{
+      oneOf: [<ForgeJSONSchema>{}]
+    };
 
-		var index = 0;
+    let index = 0;
 
-		if (Object.keys(this.Schema.properties).length > 0)
-			index = parseInt(Object.keys(this.Schema.properties)[(Object.keys(this.Schema.properties).length - 1).toString()]) + 1;
+    if (Object.keys(this.Schema.properties).length > 0) {
+      index = parseInt(Object.keys(this.Schema.properties)[(Object.keys(this.Schema.properties).length - 1).toString()]) + 1;
+    }
 
-		this.Schema.properties[index.toString()] = prop;
+    this.Schema.properties[index.toString()] = prop;
 
-		this.SetEditingSettings(prop);
+    this.SetEditingSettings(prop);
 
-		this.EmitChange();
+    this.EmitChange();
 
-		this.EmitPropertyAdded();
-	}
+    this.EmitPropertyAdded();
+  }
 
-	public EmitChange() {
-		this.Changed.emit(this.Schema);
-	}
+  public EmitChange() {
+    this.Changed.emit(this.Schema);
+  }
 
-	public EmitPropertyAdded() {
-		this.PropertyAdded.emit(this.Schema);
-	}
+  public EmitPropertyAdded() {
+    this.PropertyAdded.emit(this.Schema);
+  }
 
-	public EmitPropertyTypeChanged(propertyId: string) {
-		this.PropertyTypeChanged.emit(propertyId);
-	}
+  public EmitPropertyTypeChanged(propertyId: string) {
+    this.PropertyTypeChanged.emit(propertyId);
+  }
 
-	public EmitPropertyDeleted() {
-		this.PropertyDeleted.emit(this.Schema);
-	}
+  public EmitPropertyDeleted() {
+    this.PropertyDeleted.emit(this.Schema);
+  }
 
-	public IsEditingSettings(prop: ForgeJSONSchema) {
-		return this.CurrentlyEditingSettingsFor == prop;
-	}
+  public IsEditingSettings(prop: ForgeJSONSchema) {
+    return this.CurrentlyEditingSettingsFor === prop;
+  }
 
-	public PivotProperties() {
-		var keys = Object.keys(this.Schema.properties);
+  public PivotProperties() {
+    const keys = Object.keys(this.Schema.properties);
 
-		return keys.map(k => this.Schema.properties[k]);
-	}
+    return keys.map(k => this.Schema.properties[k]);
+  }
 
-	public SchemaPropertyTypeChanged(property: any) {
-		this.EmitChange();
+  public SchemaPropertyTypeChanged(property: any) {
+    this.EmitChange();
 
-		this.EmitPropertyTypeChanged(property.id);
-	}
+    this.EmitPropertyTypeChanged(property.id);
+  }
 
-	public PropertySchemaChanged(prop: ForgeJSONSchema, schema: ForgeJSONSchema) {
-		prop.oneOf = [schema];
+  public PropertySchemaChanged(prop: ForgeJSONSchema, schema: ForgeJSONSchema) {
+    prop.oneOf = [schema];
 
-		this.EmitChange();
-	}
+    this.EmitChange();
+  }
 
-	public RemoveProperty(propIndex: string) {
-		var msg = 'Are you sure you want to delete this property?';
+  public RemoveProperty(propIndex: string) {
+    let msg = 'Are you sure you want to delete this property?';
 
-		if (this.Schema.properties[propIndex].title)
-			msg = `Are you sure you want to delete property '${this.Schema.properties[propIndex].title}'?`;
+    if (this.Schema.properties[propIndex].title) {
+      msg = `Are you sure you want to delete property '${this.Schema.properties[propIndex].title}'?`;
+    }
 
-		if (confirm(msg)) {
-			delete this.Schema.properties[propIndex];
+    if (confirm(msg)) {
+      delete this.Schema.properties[propIndex];
 
-			this.EmitChange();
+      this.EmitChange();
 
-			this.EmitPropertyDeleted();
-		}
+      this.EmitPropertyDeleted();
+    }
+  }
 
-	}
+  public SetEditingSettings(prop: ForgeJSONSchema) {
+    if (this.IsEditingSettings(prop)) {
+      this.CurrentlyEditingSettingsFor = null;
+    } else {
+      this.CurrentlyEditingSettingsFor = prop;
+    }
+  }
 
-	public SetEditingSettings(prop: ForgeJSONSchema) {
-		if (this.IsEditingSettings(prop))
-			this.CurrentlyEditingSettingsFor = null;
-		else
-			this.CurrentlyEditingSettingsFor = prop;
-	}
+  public SortSuccess(event: any) {
+    const tmpProps = {};
 
-	public SortSuccess(event: any) {
-		var tmpProps = {};
+    for (const key in this.Schema.properties) {
+      tmpProps[this.SortedProperties.indexOf(this.Schema.properties[key].id)] = this.Schema.properties[key];
+    }
 
-		for (var key in this.Schema.properties) {
-			tmpProps[this.SortedProperties.indexOf(this.Schema.properties[key].id)] = this.Schema.properties[key];
-		}
+    this.Schema.properties = tmpProps;
+  }
 
-		this.Schema.properties = tmpProps;
-	}
+  public ValueChanged(root: any, prop: string, value: any) {
+    root[prop] = value;
 
-	public ValueChanged(root: any, prop: string, value: any) {
-		root[prop] = value;
+    this.EmitChange();
+  }
 
-		this.EmitChange();
-	}
-
-	//	Helpers
+  // 	Helpers
 }
