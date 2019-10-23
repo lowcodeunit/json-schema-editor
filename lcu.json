@@ -1,0 +1,14 @@
+{
+  "templates": {
+    "repository": "lowcodeunit-devkit/lcu-cli-templates-core",
+    "scope": "@lowcodeunit",
+    "workspace": "json-schema-editor"
+  },
+  "config": {
+    "wc": ["wc/json-schema-editor.lcu.js"],
+    "solutions": {},
+    "elements": {},
+    "flux": {},
+    "dependencies": {}
+  }
+}
