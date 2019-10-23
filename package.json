@@ -1,6 +1,6 @@
 {
   "name": "@lowcodeunit/json-schema-editor",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "scripts": {
     "build:common": "ng build common",
     "build:demo": "ng build demo --prod",
