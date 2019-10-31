@@ -1,0 +1,30 @@
+<!-- <div formArrayName="items"
+  *ngFor="let item of orderForm.get('items')['controls']; let i = index;">
+  <div [formGroupName]="i">
+    <input formControlName="name" placeholder="Item name">
+    <input formControlName="description" placeholder="Item description">
+    <input formControlName="price" placeholder="Item price">
+  </div>
+
+  Chosen name: {{ orderForm.controls.items['controls'][i].controls.name.value }}
+</div> -->
+<form [formGroup]="DemoForm">
+    <!-- <div [formArrayName]="DemoArray" *ngFor="let arrayItem of ArrayItems; let i=index">
+        <input [id]="arrayItem.key" type="checkbox"
+            [formControlName]="DemoArray[i]">
+        <label [for]="arrayItem.id" class="array-item-title">
+            {{arrayItem.value}}
+        </label>
+    </div> -->
+    <div *ngIf="DemoArray && ArrayItems">
+        <div formArrayName="DemoArray" *ngFor="let itm of ArrayItems; let i=index">
+            <mat-form-field>
+                <input [id]="itm.key" formControlName="DemoArray[i]" matInput placeholder="" [value]="itm.key">
+            </mat-form-field>
+            <!-- <mat-form-field>
+                <input [id]="itm.value" [formControl]="DemoArray[i+1]" matInput placeholder="" [value]="itm.value">
+            </mat-form-field> -->
+        </div>
+    </div>
+    
+</form>
