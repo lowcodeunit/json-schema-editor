@@ -1,0 +1,29 @@
+
+<form [formGroup]="DemoForm">
+    <button mat-raised-button color="primary" [disabled]="!DemoForm.valid" (click)="Save()">
+        Save
+    </button>
+    <div formArrayName="jsonFields">
+        <div *ngFor="let itm of FormItems; let i=index">
+            <div [formGroupName]="i" fxLayout="row" fxLayoutGap="10px" >
+                    <!-- <input type="text" matInput placeholder="key{{i}}" formControlName="key">
+
+                    <input type="text" matInput placeholder="value{{i}}" formControlName="value"> -->
+
+                    <mat-form-field>
+                        <input matInput formControlName="key">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput formControlName="value">
+                    </mat-form-field>
+
+                <!-- <mat-form-field>
+                    <input [id]="itm.key" [formControlName]="i" matInput placeholder="">
+                </mat-form-field>
+                <mat-form-field>
+                    <input [formControlName]="i" matInput placeholder="">
+                </mat-form-field> -->
+            </div>
+        </div>
+    </div>
+</form>
