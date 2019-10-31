@@ -1,13 +1,9 @@
-<div [className]="ThemeClass | async" style="height: 100%">
-    <lcu-side-nav
-        [nav-links]="Links" 
-        logo-class="primary-logo"
-        logo-alt="Fathym Logo">
-        <div class="router-container " style="height: 90%;">
-            <!-- <div style="height: 150px; width: auto" class="thinky-logo"></div> -->
-            <router-outlet (activate)="OnActivate($event)"></router-outlet>
-        </div>
-        <img class="bg-image" [src]="BackgroundImage" alt="">
-    </lcu-side-nav>
+<div fxLayout="row" fxLayoutGap="10px" [className]="ThemeClass | async" style="height: 100%" class="background">
+    <mat-card>
+        <lcu-dynamic-reactive-form-dos [json-schema]="JSONSchema"></lcu-dynamic-reactive-form-dos>
+    </mat-card>
+    <mat-card>
+        <lcu-json-editor [json-schema]="JSONSchema"></lcu-json-editor>
+    </mat-card>
 </div>
 
