@@ -90,12 +90,24 @@ ngOnInit() {
   */
  protected onChanges(fg: FormGroup): void {
     fg.valueChanges.subscribe((val: JSONControlModel) => {
-      const json: JSONSchema = { ...this.JSONSchema };
-
+      let json: JSONSchema = { ...this.JSONSchema };
       json.default[val.ControlName] = val.Value;
-      json.default = this.renameJSON( json.default, '$schema', val.Key );
+      // json.default[val.Key] = json.default[val.ControlName];
+      // delete json.default[val.ControlName];
 
+      // if (json.default[val.ControlName] !== json.default[val.Key]) {
+      //   Object.defineProperty(o, json.default[val.Key],
+      //       Object.getOwnPropertyDescriptor(o, json.default[val.ControlName]));
+      //   delete o[json.default[val.ControlName]];
+      // }
+
+     // delete Object.assign({}, {[val.Value]: json.default[val.ControlName] })[val.ControlName];
+
+      // this.JSONSchema.default[val.ControlName] = val.Value;
+      const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
+      json.default = this.renameJSON( json.default, key, val.Key );
       this.updateSchemaControl(json);
+      console.log('value change', val);
     });
  }
 
