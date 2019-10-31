@@ -7,15 +7,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { FathymSharedModule, MaterialModule, PipeModule, LCUServiceSettings, RealTimeService } from '@lcu/common';
-import { JsonEditorComponent, TreeLoadmoreExampleComponent, DynamicReactiveFormComponent, DynamicReactiveFormDosComponent } from '@lowcodeunit/json-schema-editor-common';
+import { JsonEditorComponent, DynamicReactiveFormComponent, DynamicReactiveFormDosComponent } from '@lowcodeunit/json-schema-editor-common';
 
 @NgModule({
   declarations: [
     AppComponent,
-    JsonEditorComponent,
-    TreeLoadmoreExampleComponent,
     DynamicReactiveFormComponent,
-    DynamicReactiveFormDosComponent
+    DynamicReactiveFormDosComponent,
+    JsonEditorComponent
   ],
   imports: [
     BrowserAnimationsModule,
