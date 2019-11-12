@@ -1,0 +1,24 @@
+
+<form
+    fxLayout="row"
+    fxLayoutGap="10px"
+    [formGroup]="Form"
+    novalidate>
+
+    <div [innerHTML]="text"></div>
+
+    <!-- <div formArrayName="JSONFields">
+        <div *ngFor="let itm of DynamicControlItems; let i=index">
+            <div [formGroupName]="i" fxLayout="row" >
+                <mat-form-field>
+                    <input matInput formControlName="Key">
+                </mat-form-field>       
+            
+                <mat-form-field [ngStyle]="{'background-color':'green', 'margin-left': i * itm.Indent +'px'}">
+                    <input matInput formControlName="Value">
+                </mat-form-field>
+                <pre [ngStyle]="{'background-color':'lightblue', 'margin-left': i * itm.Indent +'px'}">{{itm.Indent}}</pre>
+            </div>
+        </div>
+    </div> -->
+</form>

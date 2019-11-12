@@ -16,10 +16,10 @@
             <div formArrayName="JSONFields">
                 <div *ngFor="let itm of DynamicControlItems; let i=index">
                     <div [formGroupName]="i" fxLayout="row">
-                        <mat-form-field>
+                        <mat-form-field [ngStyle]="{'margin-left': itm.Indent +'px'}">
                             <input matInput formControlName="Key" (click)="ControlSelected(itm, i)">
                         </mat-form-field>
-                        <mat-form-field [ngStyle]="{'background-color':'lightblue', 'margin-left': itm.Indent +'px'}">
+                        <mat-form-field [ngStyle]="{'margin-left': 10 +'px'}">
                             <input 
                             matInput 
                             formControlName="Value" 

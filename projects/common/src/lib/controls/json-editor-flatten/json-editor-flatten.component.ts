@@ -1,17 +1,20 @@
-import { JSONFlattenUnflatten } from './../../utils/json/json-flatten-unflatten.util';
+import { JSONSchemaItemModel } from './../../models/json-schema-item.model';
 import { async } from '@angular/core/testing';
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, AbstractControl, FormControl } from '@angular/forms';
 import { JSONSchema, IsDataTypeUtil } from '@lcu/common';
 import { JSONControlModel } from './../../models/json-control.model';
 import { JSONSchemaPropModel } from '../../models/json-schema-prop.model';
+import { JSONFlattenUnflatten } from '../../utils/json/json-flatten-unflatten.util';
+import { flatten } from '@angular/compiler';
 
 @Component({
-  selector: 'lcu-json-editor',
-  templateUrl: './json-editor.component.html',
-  styleUrls: ['./json-editor.component.scss']
+  selector: 'lcu-json-editor-flatten',
+  templateUrl: './json-editor-flatten.component.html',
+  styleUrls: ['./json-editor-flatten.component.scss']
 })
-export class JsonEditorComponent implements OnInit {
+
+export class JsonEditorFlattenComponent implements OnInit {
 
   private _jsonSchema: JSONSchema;
   /**
@@ -62,15 +65,11 @@ public DynamicControlItems: Array<JSONControlModel>;
  */
 public JSONSchemaEditorForm: FormGroup;
 
-protected objectCount: number = 0;
-
-protected topLevelProps: Array<JSONSchemaPropModel>;
-
 protected query: string;
+
 
 constructor(protected formBuilder: FormBuilder) {
   this.DynamicControlItems = [];
-  this.topLevelProps = [];
 }
 
 ngOnInit() {
@@ -100,8 +99,6 @@ ngOnInit() {
 
       const json: JSONSchema = { ...this.JSONSchema };
       json.default[val.ControlName] = val.Value;
-
-      console.log(this.getNestedObject(json.default, ['definitions']));
 
       const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
       json.default = this.renameJSONKey( json.default, key, val.Key );
@@ -147,7 +144,7 @@ ngOnInit() {
  }
 
  protected updateSchemaControl(json: JSONSchema): void {
-    this.EditedSchemaControl.setValue(JSON.stringify(json.default, null, 100)); // keeps JSON format
+    this.EditedSchemaControl.setValue(JSON.stringify(json.default, null, 5)); // keeps JSON format
  }
 
  /**
@@ -157,24 +154,96 @@ ngOnInit() {
   */
  protected iterateJSONSchema(schema: JSONSchema, indent?: number): void {
 
-  //  console.log('t', JSONFlattenUnflatten.Flatten(schema));
-  //  console.log('unflattenMap', JSONFlattenUnflatten.Unflatten(t));
+  // https://itnext.io/using-es6-to-destructure-nested-objects-in-javascript-avoid-undefined-errors-that-break-your-code-612ae67913e9
+  // const user = {
+  //   id: 101,
+  //   email: 'jack@dev.com',
+  //   personalInfo: {
+  //       name: 'Jack',
+  //       address: {
+  //           line1: 'westwish st',
+  //           line2: 'washmasher',
+  //           city: 'wallas',
+  //           state: 'WX'
+  //       }
+  //   }
+  // };
 
-   Object.entries(schema).forEach(([key, value]) => {
+  // const {
+  // personalInfo: {
+  //   address: {
+  //     line2
+  //   },
+  // },
+  // } = user;
 
-      this.addNewControl(new JSONControlModel(key, value, key, indent));
+ // console.log('destruct', line2);
 
-      if (typeof value === 'object') {
-          this.objectCount += 10;
-          console.log(this.objectCount);
-        //  this.iterateJSONSchema(value, this.objectCount);
-         // console.log(JSON.stringify(value, null, 5));
-        }
-       // this.getChildren(this.topLevelProps);
-        // console.log('key: ' + key + ', value: ' + value);
-      }
-    );
-    // console.log('top level props', this.topLevelProps);
+  // const person = { name: 'Sarah', country: 'Nigeria', job: 'Developer' }; // https://dev.to/sarah_chima/object-destructuring-in-es6-3fm
+  // const { name: foo, job: bar } = person;
+
+  // console.log(foo); // "Sarah"
+  // console.log(bar); // "Developer"
+
+  // const { properties : { address: { items }}} = schema;
+  // console.log('destructor', items);
+
+  // console.log('Flatten', JSONFlattenUnflatten.Flatten(schema));
+  // console.log('FlattenMap', JSONFlattenUnflatten.FlattenMap(schema));
+
+  // const flatMap: Map<string, string> = JSONFlattenUnflatten.FlattenMap(schema);
+  // const flatMap: Map<string, JSONSchemaItemModel> = JSONFlattenUnflatten.FlattenMapJSONSchemaItem(schema);
+  const flatMap: Map<string, string> = JSONFlattenUnflatten.FlattenMapTest(schema);
+
+
+  //  Object.entries(JSONFlattenUnflatten.Flatten(schema)).forEach(([key, value]) => {
+  //   console.log('enteries for each', [key, value]);
+  // });
+
+  //  for (const [k, v] of t) {
+  //   console.log(k, v);
+  // }
+
+//  Object.entries(t).forEach(([key, value]) => {
+  //   console.log(t[key].entries().next().value);
+  //   });
+  let indices: Array<string> = [];
+  let flatMapArray: Array<any> = [];
+
+  for (const kv of flatMap) {
+    flatMapArray.push(kv);
+    
+   // console.log('kv', kv);
+    indices = kv[0].split('.');
+
+    let x = Array.from(new Set(kv[0].split('.'))).toString();
+    // console.log('x', x);
+
+    if (indices.length > 0) {
+      indices.forEach((value, idx) => {
+       // this.addNewControl(new JSONControlModel(value, kv[1], value, idx * 20));
+      });
+    } else {
+     // this.addNewControl(new JSONControlModel(kv[0], kv[1], kv[0]));
+    }
+
+    // console.log('flatMapArray', flatMapArray);
+   }
+ //  console.log('flatMapArray', flatMapArray);
+
+  flatMapArray.forEach( (element) => {
+    let path: string = element[0];
+
+    const x: any = element[0].split('.');
+    // console.log('x', x);
+    // console.log('sdfsfsf', element[0] + ' : ' + schema[path]);
+
+    // console.log('schema.' + element[0] + ' = ' + this.getNestedObject(schema, x));
+    const value: string = this.getNestedObject(schema, x);
+
+    this.addNewControl(new JSONControlModel(element[0], this.getNestedObject(schema, x), element[0], 0, value));
+
+  });
   }
 
   /**
@@ -212,3 +281,4 @@ ngOnInit() {
   // }
 
 }
+
