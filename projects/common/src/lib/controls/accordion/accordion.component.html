@@ -16,14 +16,14 @@
       <mat-card-content>
           <div formArrayName="JSONFields">
 
-
-                <div *ngFor="let itm of TestItems; let i = index">
+                <!--TestItems instead of DynamicControlItems-->
+                <div *ngFor="let itm of DynamicControlItems; let i = index">
                         <div [formGroupName]="i" fxLayout="row">
                           <mat-accordion class="margin-bottom-3" [ngStyle]="{'margin-left': itm.Indent +'px'}">
                             <mat-expansion-panel (opened)="PanelOpenState = true" (closed)="PanelOpenState = false">
                               <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                  <mat-label>{{itm.Key}}</mat-label>
+                                  <mat-label>{{itm.ControlName}}</mat-label>
                                 </mat-panel-title>
                                 <mat-panel-description>
                                 </mat-panel-description>
@@ -39,7 +39,7 @@
                               </mat-form-field>
                               
                               <!--If ValueType is array, then loop over those values-->
-                              <div fxFlex *ngIf="itm.ValueType === 'array'">
+                              <div fxFlex *ngIf="itm.ValueDataType === 'array'">
                                 <mat-form-field fxLayout="column" *ngFor="let arrItm of itm.Value; let arrIdx = index" [ngStyle]="{'margin-left': 20 +'px'}">
                                     <input 
                                     placeholder="Index {{arrIdx}}"
@@ -51,7 +51,7 @@
                             <!--If ValueType is array, then loop over those values-->
 
 
-                              <mat-form-field *ngIf="itm.ValueType === 'string'" [ngStyle]="{'margin-left': 10 +'px'}">
+                              <mat-form-field *ngIf="itm.ValueDataType === 'string'" [ngStyle]="{'margin-left': 10 +'px'}">
                                   <input 
                                     matInput 
                                     placeholder="Value"

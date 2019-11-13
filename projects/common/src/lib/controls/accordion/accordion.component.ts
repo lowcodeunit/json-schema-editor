@@ -106,17 +106,26 @@ protected setupForm(): void {
   * @param item control to add
   */
  protected addNewControl(newItem: JSONControlModel) {
+
+  // push new item to a storage array
   this.DynamicControlItems.push(newItem);
+
+  // destructor newItem, this prevents having to do: newItem.ControlName, etc.
+  const { ControlName, DotNotatedPath, Indent, Key, Level, Value, ValueDataType } = newItem;
 
   const fg: FormGroup = this.formBuilder.group(
     {
-      Key: [newItem.Key],
-      Value: [newItem.Value],
-      ControlName: [newItem.Key],
-      Indent: [newItem.Indent]
+      ControlName: [Key],
+      DotNotatedPath: [DotNotatedPath],
+      Indent: [Indent],
+      Key: [Key],
+      Level: [Level],
+      Value: [Value],
+      ValueType: [ValueDataType]
     }
   );
 
+  // push new form control to a storage array
   this.JSONFields.push(fg);
 
   this.onChanges(fg);
@@ -169,30 +178,47 @@ protected setupForm(): void {
 
     for (const kv of flatMap) {
       flatMapArray.push(kv);
-      flatMapArray.push();
     }
 
     flatMapArray.forEach((itm: Array<any>, index: number) => {
-      let xOffset: number = 0; // want to offset each object item a bit, but can't get it working yet
+
+      // dot-notated-path(properties.address.name)
       const dotNotatedPath: string = itm[0];
-      const pathArray: Array<string> = itm[0].split('.');
-      const pathLength: number = pathArray.length;
-      const value: string = this.getNestedObject(schema, pathArray);
 
-      this.TestItems.push(new JSONControlModel(
-        dotNotatedPath,
-        this.getNestedObject(schema, pathArray),
-        dotNotatedPath,
-        10 * xOffset,
-        (IsDataTypeUtil.GetDataType(value))));
+      // Array of each item separated by dot-notation
+      const pathIndices: Array<string> = itm[0].split('.');
 
-      this.addNewControl(new JSONControlModel(
-        dotNotatedPath,
-        this.getNestedObject(schema, pathArray),
-        dotNotatedPath,
-        10 * xOffset,
-        (IsDataTypeUtil.GetDataType(value))));
+      // Length of pathIndices
+      const pathLength: number = pathIndices.length;
 
+      pathIndices.forEach((indices: string, idx: number, arr: Array<string>) => {
+
+        // need to build the path to get the item value
+        const pathArr: Array<string> = arr.slice(0, idx + 1).map(i => {
+          return i;
+        });
+
+        // const value: string = this.getNestedObject(schema, [indices]);
+        const value: string = this.getNestedObject(schema, pathArr);
+        let dataType: string = '';
+
+        if (value) {
+          dataType = (IsDataTypeUtil.GetDataType(value));
+        }
+
+      //  const { ControlName, DotNotatedPath, Indent, Key, Level, Value, ValueDataType } = newItem;
+
+        this.addNewControl(
+          new JSONControlModel(
+            indices, // key
+            value, // value
+            indices, // control name
+            20 * idx, // indent(x offset)
+            dataType, // data type
+            idx, // parent/child level
+            dotNotatedPath, // dotnotated path
+          ));
+      });
     });
   }
 
