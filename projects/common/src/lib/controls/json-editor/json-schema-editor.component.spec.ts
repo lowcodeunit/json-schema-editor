@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { JSONSchemaEditorComponent } from './json-schema-editor.component';
 
-import { TreeBuilderComponent } from './tree-builder.component';
 
-describe('TreeBuilderComponent', () => {
-  let component: TreeBuilderComponent;
-  let fixture: ComponentFixture<TreeBuilderComponent>;
+describe('JSONSchemaEditorComponent', () => {
+  let component: JSONSchemaEditorComponent;
+  let fixture: ComponentFixture<JSONSchemaEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TreeBuilderComponent ]
+      declarations: [ JSONSchemaEditorComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TreeBuilderComponent);
+    fixture = TestBed.createComponent(JSONSchemaEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
