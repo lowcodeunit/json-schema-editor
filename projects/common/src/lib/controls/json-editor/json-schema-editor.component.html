@@ -29,15 +29,24 @@
                                 </mat-panel-description>
                               </mat-expansion-panel-header>
                               
-                              <mat-form-field [ngStyle]="{'margin-left': 10 +'px'}">
+                              <div fxFlex fxLayout="column" [ngStyle]="{'margin-left': 10 +'px'}">
+                                <mat-form-field>
+                                    <input 
+                                      matInput 
+                                      formControlName="Key" 
+                                      placeholder="Key"
+                                      (click)="ControlSelected(itm, i)" 
+                                      value="{{itm.Key}}">
+                                </mat-form-field>
+                                <mat-form-field *ngIf="itm.DotNotatedPath">
                                   <input 
-                                    matInput 
-                                    formControlName="Key" 
-                                    placeholder="Key"
-                                    (click)="ControlSelected(itm, i)" 
-                                    value="{{itm.Key}}">
-                              </mat-form-field>
-                              
+                                  disabled
+                                        matInput 
+                                        formControlName="DotNotatedPath" 
+                                        placeholder="Full Path"
+                                        value="{{itm.DotNotatedPath}}">
+                                </mat-form-field>
+                              </div>
                               <!--If ValueType is array, then loop over those values-->
                               <div fxFlex *ngIf="itm.ValueDataType === 'array'">
                                 <mat-form-field fxLayout="column" *ngFor="let arrItm of itm.Value; let arrIdx = index" [ngStyle]="{'margin-left': 20 +'px'}">
@@ -66,7 +75,7 @@
                     </div>
               <!-- <div *ngFor="let itm of DynamicControlItems; let i=index">
                   <div [formGroupName]="i" fxLayout="row">
-                    <mat-accordion class="margin-bottom-3" [ngStyle]="{'margin-left': itm.Indent +'px'}">
+                    <mat-json-editor class="margin-bottom-3" [ngStyle]="{'margin-left': itm.Indent +'px'}">
                       <mat-expansion-panel (opened)="PanelOpenState = true" (closed)="PanelOpenState = false">
                         <mat-expansion-panel-header>
                           <mat-panel-title>
@@ -88,7 +97,7 @@
                         </mat-form-field>
 
                       </mat-expansion-panel>
-                    </mat-accordion>
+                    </mat-json-editor>
                   </div>
               </div> -->
 

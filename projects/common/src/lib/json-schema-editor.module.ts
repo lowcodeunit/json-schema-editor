@@ -3,13 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from '@lcu/common';
-import { JsonEditorComponent } from './controls/json-editor/json-editor.component';
-import { TreeBuilderComponent } from './controls/tree-builder/tree-builder.component';
-import { JsonEditorFlattenComponent } from './controls/json-editor-flatten/json-editor-flatten.component';
-import { AccordionComponent } from './controls/accordion/accordion.component';
+import { JSONSchemaEditorComponent } from './controls/json-editor/json-schema-editor.component';
 
 @NgModule({
-  declarations: [JsonEditorComponent, TreeBuilderComponent, JsonEditorFlattenComponent, AccordionComponent],
+  declarations: [JSONSchemaEditorComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -17,7 +14,7 @@ import { AccordionComponent } from './controls/accordion/accordion.component';
     MaterialModule,
     FlexLayoutModule
   ],
-  exports: [JsonEditorComponent, TreeBuilderComponent, JsonEditorFlattenComponent, AccordionComponent],
-  entryComponents: [JsonEditorComponent, TreeBuilderComponent, JsonEditorFlattenComponent, AccordionComponent]
+  exports: [JSONSchemaEditorComponent],
+  entryComponents: [JSONSchemaEditorComponent]
 })
 export class JsonSchemaEditorModule { }

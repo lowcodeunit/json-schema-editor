@@ -1,16 +1,15 @@
 import { element } from 'protractor';
 import { Component, OnInit, Input } from '@angular/core';
-import { JSONSchema, IsDataTypeUtil } from '@lcu/common';
+import { JSONSchema, IsDataTypeUtil, JSONFlattenUnflatten } from '@lcu/common';
 import { FormGroup, AbstractControl, FormArray, FormControl, FormBuilder } from '@angular/forms';
 import { JSONControlModel } from '../../models/json-control.model';
-import { JSONFlattenUnflatten } from '../../utils/json/json-flatten-unflatten.util';
 
 @Component({
-  selector: 'lcu-accordion',
-  templateUrl: './accordion.component.html',
-  styleUrls: ['./accordion.component.scss']
+  selector: 'lcu-json-schema-editor',
+  templateUrl: './json-schema-editor.component.html',
+  styleUrls: ['./json-schema-editor.component.scss']
 })
-export class AccordionComponent implements OnInit {
+export class JSONSchemaEditorComponent implements OnInit {
 
   private _jsonSchema: JSONSchema;
   /**
@@ -172,8 +171,15 @@ protected setupForm(): void {
   return item;
  }
 
+ /**
+  * Iterate through JSON Schema and build dynamic controls
+  *
+  * Set control properties
+  *
+  * @param schema JSON Schema
+  */
   protected iterateJSONSchema(schema): void {
-    const flatMap: Map<string, string> = JSONFlattenUnflatten.FlattenMapTest(schema);
+    const flatMap: Map<string, string> = JSONFlattenUnflatten.FlattenMap(schema);
     const flatMapArray: Array<any> = [];
 
     for (const kv of flatMap) {
@@ -181,9 +187,6 @@ protected setupForm(): void {
     }
 
     flatMapArray.forEach((itm: Array<any>, index: number) => {
-
-      // dot-notated-path(properties.address.name)
-      const dotNotatedPath: string = itm[0];
 
       // Array of each item separated by dot-notation
       const pathIndices: Array<string> = itm[0].split('.');
@@ -194,9 +197,14 @@ protected setupForm(): void {
       pathIndices.forEach((indices: string, idx: number, arr: Array<string>) => {
 
         // need to build the path to get the item value
+        // pathArr is also used to get the correct data path of each item
         const pathArr: Array<string> = arr.slice(0, idx + 1).map(i => {
           return i;
         });
+
+        // create a dot-notated-path(properties.address.name) for each item
+        // doing this here, because the path from flatMap is a little off
+        const dotNotatedPath: string = pathArr.join('. ');
 
         // const value: string = this.getNestedObject(schema, [indices]);
         const value: string = this.getNestedObject(schema, pathArr);
