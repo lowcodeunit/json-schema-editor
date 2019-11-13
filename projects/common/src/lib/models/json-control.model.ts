@@ -16,6 +16,16 @@ export class JSONControlModel {
     public ControlName: string;
 
     /**
+     * Full path for property(properties.address.type)
+     */
+    public DotNotatedPath?: string;
+
+    /**
+     * Parent/Child Level
+     */
+    public Level?: number;
+
+    /**
      * Indentation value, to mimic <ul><li>
      */
     public Indent?: number;
@@ -25,13 +35,27 @@ export class JSONControlModel {
      */
     public Value: string | Array<any> | object | unknown;
 
-    public ValueType?: string;
+    /**
+     * Data type
+     */
+    public ValueDataType?: string;
 
-    constructor(key: string, value: string | Array<any> | object | unknown, controlName: string, indent?: number, valueType?: string) {
-        this.ControlName = controlName;
-        this.Indent = indent;
-        this.Key = key;
-        this.Value = value;
-        this.ValueType = valueType;
-    }
+    // need to use destructured parameters
+    constructor(
+        key: string,
+        value: string | Array<any> | object | unknown,
+        controlName: string,
+        indent?: number,
+        valueDataType?: string,
+        level?: number,
+        dotNotatedPath?: string)
+        {
+            this.ControlName = controlName;
+            this.DotNotatedPath = dotNotatedPath;
+            this.Indent = indent;
+            this.Key = key;
+            this.Level = level;
+            this.Value = value;
+            this.ValueDataType = valueDataType;
+        }
 }
