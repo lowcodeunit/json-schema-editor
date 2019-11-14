@@ -11,7 +11,7 @@
           <mat-icon color="primary">view_headline</mat-icon>
           </div>
           <mat-card-title>JSON Schema</mat-card-title>
-          <mat-card-subtitle>Creator</mat-card-subtitle>
+          <mat-card-subtitle>Editor</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
           <div formArrayName="JSONFields">
@@ -19,9 +19,9 @@
                 <!--TestItems instead of DynamicControlItems-->
                 <div *ngFor="let itm of DynamicControlItems; let i = index">
                         <div [formGroupName]="i" fxLayout="row">
-                          <mat-accordion class="margin-bottom-3" [ngStyle]="{'margin-left': itm.Indent +'px'}">
+                          <mat-accordion class="margin-bottom-2" [ngStyle]="{'margin-left': itm.Indent +'px'}">
                             <mat-expansion-panel (opened)="PanelOpenState = true" (closed)="PanelOpenState = false">
-                              <mat-expansion-panel-header>
+                              <mat-expansion-panel-header [collapsedHeight]="ExpansionPanelClosedHeight">
                                 <mat-panel-title>
                                   <mat-label>{{itm.ControlName}}</mat-label>
                                 </mat-panel-title>
@@ -29,7 +29,8 @@
                                 </mat-panel-description>
                               </mat-expansion-panel-header>
                               
-                              <div fxFlex fxLayout="column" [ngStyle]="{'margin-left': 10 +'px'}">
+                              <mat-icon>edit</mat-icon>
+                              <div fxFlex fxLayout="column" [ngStyle]="{'margin-left': 10 +'px'}">  
                                 <mat-form-field>
                                     <input 
                                       matInput 
@@ -38,9 +39,10 @@
                                       (click)="ControlSelected(itm, i)" 
                                       value="{{itm.Key}}">
                                 </mat-form-field>
+                                  
                                 <mat-form-field *ngIf="itm.DotNotatedPath">
                                   <input 
-                                  disabled
+                                        [disabled]
                                         matInput 
                                         formControlName="DotNotatedPath" 
                                         placeholder="Full Path"

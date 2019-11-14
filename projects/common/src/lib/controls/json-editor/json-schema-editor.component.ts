@@ -29,6 +29,10 @@ export class JSONSchemaEditorComponent implements OnInit {
     this.iterateJSONSchema(val.default);
   }
 
+  public get JSONSchema(): JSONSchema {
+    return this._jsonSchema;
+  }
+
   /**
    * Access address field
    */
@@ -51,7 +55,15 @@ public get JSONFields(): any {
  */
 public DynamicControlItems: Array<JSONControlModel>;
 
-public TestItems: Array<JSONControlModel>;
+/**
+ * Height of closed expansion panel header
+ */
+public ExpansionPanelClosedHeight: string;
+
+/**
+ * Height of open expansion panel header
+ */
+public ExpansionPanelOpenHeight: string;
 
 /**
  * Form control
@@ -69,7 +81,7 @@ public InnerTextTest: string;
 
     this.PanelOpenState = false;
     this.DynamicControlItems = [];
-    this.TestItems = [];
+    this.ExpansionPanelClosedHeight = '30px';
   }
 
   ngOnInit() {
@@ -140,12 +152,35 @@ protected setupForm(): void {
   fg.valueChanges.subscribe((val: JSONControlModel) => {
 
     const json: JSONSchema = { ...this.JSONSchema };
-    json.default[val.ControlName] = val.Value;
 
+    // json.default[val.DotNotatedPath] = val.Value;
+
+    this.ChangeValueWithDotNotation(json.default, val.DotNotatedPath, val.Value);
+
+    // when changing the key value, change the key name
     const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
     json.default = this.renameJSONKey( json.default, key, val.Key );
     this.updateSchemaControl(json);
   });
+}
+
+/**
+ * Using dot notation, iterate the object and change the key value
+ *
+ * @param schema JSON object
+ *
+ * @param dotPath Dot notation path
+ *
+ * @param newVal Changed value
+ */
+protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal: string): void {
+    return dotPath.split('.').reduce( (prev, curr, idx, arr) => {
+      if ( idx === (arr.length - 1) && prev ) {
+          prev[curr] = newVal;
+      }
+
+      return prev ? prev[curr] : null;
+  }, schema);
 }
 
  /**
@@ -163,12 +198,13 @@ protected setupForm(): void {
     item === oldKey ? ({ ...s, [newKey]: json[oldKey] }) : ({...s, [item]: json[item]}), {} );
  }
 
-  protected updateSchemaControl(json: JSONSchema): void {
-    this.EditedSchemaControl.setValue(JSON.stringify(json.default, null, 5)); // keeps JSON format
- }
-
- protected indent(item): number {
-  return item;
+ /**
+  * Update the current schema
+  *
+  * @param schema
+  */
+  protected updateSchemaControl(schema: JSONSchema): void {
+    this.EditedSchemaControl.setValue(JSON.stringify(schema.default, null, 5)); // null, 5 keeps JSON format
  }
 
  /**
@@ -194,6 +230,7 @@ protected setupForm(): void {
       // Length of pathIndices
       const pathLength: number = pathIndices.length;
 
+      // loop of path indices(the dotnotated path)
       pathIndices.forEach((indices: string, idx: number, arr: Array<string>) => {
 
         // need to build the path to get the item value
@@ -204,10 +241,10 @@ protected setupForm(): void {
 
         // create a dot-notated-path(properties.address.name) for each item
         // doing this here, because the path from flatMap is a little off
-        const dotNotatedPath: string = pathArr.join('. ');
+        const dotNotatedPath: string = pathArr.join('.');
 
-        // const value: string = this.getNestedObject(schema, [indices]);
-        const value: string = this.getNestedObject(schema, pathArr);
+        // const value: string = this.getNestedObjectValue(schema, [indices]);
+        const value: string = this.getNestedObjectValue(schema, pathArr);
         let dataType: string = '';
 
         if (value) {
@@ -236,8 +273,14 @@ protected setupForm(): void {
    * @param nestedObj object to test
    * @param pathArr array of names used to drill into objects(a.b.c, etc.)
    */
-  protected getNestedObject(nestedObj, pathArr: Array<string>): any {
-    return pathArr.reduce((obj, key) =>
+  protected getNestedObjectValue(nestedObj, pathArr: Array<string>): any {
+    const val = pathArr.reduce((obj, key) =>
         (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
+
+    return val;
+  }
+
+  protected breakDownDotnotation(val: string): Array<string> {
+    return val.split('.');
   }
 }
