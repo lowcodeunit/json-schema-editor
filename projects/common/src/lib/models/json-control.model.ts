@@ -33,7 +33,8 @@ export class JSONControlModel {
     /**
      * Property value
      */
-    public Value: string | Array<any> | object | unknown;
+    // public Value: string | Array<any> | object | unknown;
+    public Value: string;
 
     /**
      * Data type
@@ -43,7 +44,7 @@ export class JSONControlModel {
     // need to use destructured parameters
     constructor(
         key: string,
-        value: string | Array<any> | object | unknown,
+        value: string,
         controlName: string,
         indent?: number,
         valueDataType?: string,
