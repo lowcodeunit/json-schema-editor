@@ -1,6 +1,6 @@
 import { element } from 'protractor';
 import { Component, OnInit, Input } from '@angular/core';
-import { JSONSchema, IsDataTypeUtil, JSONFlattenUnflatten } from '@lcu/common';
+import { JSONSchema, IsDataTypeUtil, JSONFlattenUnflatten, DotNotationUtil } from '@lcu/common';
 import { FormGroup, AbstractControl, FormArray, FormControl, FormBuilder } from '@angular/forms';
 import { JSONControlModel } from '../../models/json-control.model';
 
@@ -10,6 +10,15 @@ import { JSONControlModel } from '../../models/json-control.model';
   styleUrls: ['./json-schema-editor.component.scss']
 })
 export class JSONSchemaEditorComponent implements OnInit {
+
+  keysMap = {
+    name: 'firstName',
+    job: 'passion'
+};
+objKeysMap = {
+    name: 'Bobo',
+    job: 'Front-End Master'
+};
 
   private _jsonSchema: JSONSchema;
   /**
@@ -155,14 +164,62 @@ protected setupForm(): void {
 
     // json.default[val.DotNotatedPath] = val.Value;
 
-    this.ChangeValueWithDotNotation(json.default, val.DotNotatedPath, val.Value);
+    DotNotationUtil.ValueChange(json.default, val.DotNotatedPath, val.Value);
+
+    const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
+    // console.log(this.renameKeys({[key]: [val.Key]}, json.default));
+    this.ChangeKey(json.default, val.DotNotatedPath, key, val.Key);
+
 
     // when changing the key value, change the key name
-    const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
-    json.default = this.renameJSONKey( json.default, key, val.Key );
+    // const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
+   // json.default = this.renameJSONKey( json.default, key, val.Key );
     this.updateSchemaControl(json);
   });
 }
+
+// schema.properties.address = this.renameJSONKey(prev, oldKey, newKey) : ({...s, [item]: prev[item]}), {} );
+  protected ChangeKey(schema: JSONSchema, dotPath: string, oldKey: string, newKey: string): any {
+
+    dotPath.split('.').reduce( (prev, curr, idx, arr) => {
+          if ( idx === (arr.length - 1) && prev ) {
+            console.log(prev);
+            // const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
+            console.log('rename key', this.renameKeys({[oldKey]: newKey}, prev));
+           // prev = this.renameKeys({[oldKey]: newKey}, prev);
+            // return Object.keys(prev).reduce((s, item) =>
+            //   item === oldKey ?
+            //   this.renameJSONKey(prev, oldKey, newKey) : ({...s, [item]: prev[item]}), {} );
+          }
+          return prev ? prev[curr] : null; // if prev, then start the loop over with prev[curr]
+      }, schema); // first item to start the loop
+  }
+
+
+  
+  protected renameKeys = (keysMap, obj) => {
+
+    debugger;
+
+    return Object 
+            .keys(obj)
+            .reduce((acc, key) => {
+
+              debugger;
+
+              const renamedObject = {
+                [keysMap[key] || key]: obj[key]
+              };
+
+              debugger;
+
+              return {
+                ...acc,
+                ...renamedObject
+              };
+
+            }, {});
+  }
 
 /**
  * Using dot notation, iterate the object and change the key value
@@ -173,15 +230,15 @@ protected setupForm(): void {
  *
  * @param newVal Changed value
  */
-protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal: string): void {
-    return dotPath.split('.').reduce( (prev, curr, idx, arr) => {
-      if ( idx === (arr.length - 1) && prev ) {
-          prev[curr] = newVal;
-      }
+// protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal: string): void {
+//     return dotPath.split('.').reduce( (prev, curr, idx, arr) => {
+//       if ( idx === (arr.length - 1) && prev ) {
+//           prev[curr] = newVal;
+//       }
 
-      return prev ? prev[curr] : null;
-  }, schema);
-}
+//       return prev ? prev[curr] : null;
+//   }, schema);
+// }
 
  /**
   * Renaming JSON properties keys
@@ -194,14 +251,14 @@ protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal
   *
   */
  protected renameJSONKey(json, oldKey: string, newKey: string): any {
-  return Object.keys(json).reduce((s, item) =>
+   return Object.keys(json).reduce((s, item) =>
     item === oldKey ? ({ ...s, [newKey]: json[oldKey] }) : ({...s, [item]: json[item]}), {} );
  }
 
  /**
   * Update the current schema
   *
-  * @param schema
+  * @param schema JSON to search through
   */
   protected updateSchemaControl(schema: JSONSchema): void {
     this.EditedSchemaControl.setValue(JSON.stringify(schema.default, null, 5)); // null, 5 keeps JSON format
@@ -243,8 +300,8 @@ protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal
         // doing this here, because the path from flatMap is a little off
         const dotNotatedPath: string = pathArr.join('.');
 
-        // const value: string = this.getNestedObjectValue(schema, [indices]);
-        const value: string = this.getNestedObjectValue(schema, pathArr);
+        // const value: string = this.getNestedObjectValue(schema, pathArr);
+        const value: string = DotNotationUtil.GetValue(schema, pathArr);
         let dataType: string = '';
 
         if (value) {
@@ -267,20 +324,17 @@ protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal
     });
   }
 
-  /**
-   * Drill down to find nested objects
-   *
-   * @param nestedObj object to test
-   * @param pathArr array of names used to drill into objects(a.b.c, etc.)
-   */
-  protected getNestedObjectValue(nestedObj, pathArr: Array<string>): any {
-    const val = pathArr.reduce((obj, key) =>
-        (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
+  // /**
+  //  * Drill down to find nested objects
+  //  *
+  //  * @param nestedObj object to test
+  //  *
+  //  * @param pathArr array of names used to drill into objects(a.b.c, etc.)
+  //  */
+  // protected getNestedObjectValue(nestedObj, pathArr: Array<string>): any {
+  //   const val = pathArr.reduce((obj, key) =>
+  //       (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
 
-    return val;
-  }
-
-  protected breakDownDotnotation(val: string): Array<string> {
-    return val.split('.');
-  }
+  //   return val;
+  // }
 }
