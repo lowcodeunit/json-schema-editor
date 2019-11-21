@@ -48,6 +48,10 @@ export class AppComponent implements OnInit {
         address: {
           $id: '#/properties/address',
           type: 'object',
+          person: {
+            firstName: 'Shannon',
+            lastName: 'Bruns'
+          },
           shannonArray: [
             'shannon',
             'bruns'

@@ -4,9 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from '@lcu/common';
 import { JSONSchemaEditorComponent } from './controls/json-editor/json-schema-editor.component';
+import { JSONSchemaEditorChangeComponent } from './controls/json-schema-editor-change/json-schema-editor-change.component';
 
 @NgModule({
-  declarations: [JSONSchemaEditorComponent],
+  declarations: [JSONSchemaEditorComponent, JSONSchemaEditorChangeComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -14,7 +15,7 @@ import { JSONSchemaEditorComponent } from './controls/json-editor/json-schema-ed
     MaterialModule,
     FlexLayoutModule
   ],
-  exports: [JSONSchemaEditorComponent],
-  entryComponents: [JSONSchemaEditorComponent]
+  exports: [JSONSchemaEditorComponent, JSONSchemaEditorChangeComponent],
+  entryComponents: [JSONSchemaEditorComponent, JSONSchemaEditorChangeComponent]
 })
 export class JsonSchemaEditorModule { }

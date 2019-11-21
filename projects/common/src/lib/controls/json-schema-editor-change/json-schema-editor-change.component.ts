@@ -5,11 +5,11 @@ import { FormGroup, AbstractControl, FormArray, FormControl, FormBuilder } from 
 import { JSONControlModel } from '../../models/json-control.model';
 
 @Component({
-  selector: 'lcu-json-schema-editor',
-  templateUrl: './json-schema-editor.component.html',
-  styleUrls: ['./json-schema-editor.component.scss']
+  selector: 'lcu-json-schema-editor-change',
+  templateUrl: './json-schema-editor-change.component.html',
+  styleUrls: ['./json-schema-editor-change.component.scss']
 })
-export class JSONSchemaEditorComponent implements OnInit {
+export class JSONSchemaEditorChangeComponent implements OnInit {
 
   private _jsonSchema: JSONSchema;
   /**
@@ -118,14 +118,15 @@ protected setupForm(): void {
   */
  protected addNewControl(newItem: JSONControlModel) {
 
-  // maybe look here for a different way to build dynamic controls
-  // https://egghead.io/lessons/angular-dynamically-create-multiple-formcontrols-from-a-data-set-in-angular
-
   // push new item to a storage array
   this.DynamicControlItems.push(newItem);
 
   // destructor newItem, this prevents having to do: newItem.ControlName, etc.
-  const { ControlName, DotNotatedPath, Indent, Key, Level, UUID, Value, ValueDataType, ParentObj, PreviousValue } = newItem;
+  const { ControlName, DotNotatedPath, Indent, Key, Level, UUID, Value, ValueDataType } = newItem;
+
+  if (DotNotatedPath === 'properties.address.shannonArray') {
+    debugger;
+  }
 
   const fg: FormGroup = this.formBuilder.group(
     {
@@ -136,14 +137,13 @@ protected setupForm(): void {
       Key: [Key],
       Level: [Level],
       Value: [Value],
-      ValueType: [ValueDataType],
-      ParentObj: [ParentObj],
-      PreviousValue: [PreviousValue]
+      ValueDataType: [ValueDataType]
     }
   );
 
   // push new form control to a storage array
   this.JSONFields.push(fg);
+  console.log(fg);
 
   this.onChanges(fg);
 }
@@ -158,7 +158,31 @@ protected setupForm(): void {
   fg.valueChanges.subscribe((val: JSONControlModel) => {
 
     const json: JSONSchema = this.JSONSchema;
+
+    // json.default[val.DotNotatedPath] = val.Value;
+
+    // for (let dynKey of this.DynamicControlItems) {
+    //   if (dynKey.UUID === val.UUID) {
+    //     dynKey = val;
+    //   }
+    // }
+
+    // const currKey = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
     const currKey: string = val.DotNotatedPath.split('.').pop();
+
+    // Object.keys(this.JSONSchemaEditorForm.controls.JSONFields['controls']).forEach(idx => {
+    //   const control = this.JSONSchemaEditorForm.controls.JSONFields['controls'][idx];
+
+    //   if (control.value.UUID === val.UUID) {
+    //     Object.keys(control.controls).forEach((ii, df, sdf) => {
+    //       console.log('asdfsdf', ii);
+    //     });
+
+    //     // control.controls.forEach(element => {
+    //     //   console.log('element', element);
+    //     // });
+    //   }
+    // });
 
     for (let control of this.JSONSchemaEditorForm.controls.JSONFields.value) {
       if (control.UUID === val.UUID) {
@@ -167,71 +191,129 @@ protected setupForm(): void {
         const pathArr: Array<string> = val.DotNotatedPath.split('.');
 
         if (currKey !== val.Key) {
-          json.default = this.ChangeKey(json.default, val.DotNotatedPath, currKey, val.Key, val.ParentObj);
+          if (pathArr.length === 1) {
+            json.default = this.ChangeKey(json.default, val.DotNotatedPath, currKey, val.Key);
+          } else {
+            json.default = this.ChangeKey(json.default, val.DotNotatedPath, currKey, val.Key);
+            // json.default[pathArr.shift()] = this.ChangeKey(json.default, val.DotNotatedPath, currKey, val.Key);
+            // json.default[pathArr[1]] = this.ChangeKey('person', json.default, val.DotNotatedPath, currKey, val.Key);
+            // json.default[pathArr[0]] = this.ChangeKey(json.default[pathArr[0]], json.default, val.DotNotatedPath, currKey, val.Key);
+          }
         }
 
         pathArr.pop();
         pathArr.push(val.Key);
         val.DotNotatedPath = pathArr.join('.');
 
-        this.JSONSchemaEditorForm.controls.JSONFields['controls'].forEach(el => {
-          if (el.value.UUID === val.UUID) {
-            // update DotNotatedPath so it's the same as the new key value
-            el.controls['DotNotatedPath'].value = val.DotNotatedPath;
+        this.JSONSchemaEditorForm.controls.JSONFields['controls'].forEach(element => {
+          if (element.value.UUID === val.UUID) {
+            element.controls['DotNotatedPath'].value = val.DotNotatedPath;
           }
+          // element.controls.setValue(val);
         });
-
+       // if (currKey === val.Key) {
         DotNotationUtil.SetValue(json.default, val.DotNotatedPath, val.Value);
+      // }
       }
     }
+
     this.updateSchemaControl(json);
   });
 }
 
-  protected ChangeKey(schema: any, propertyPath: string, oldKey: string, newKey: string, objToChange: string): any {
+// schema.properties.address = this.renameJSONKey(prev, oldKey, newKey) : ({...s, [item]: prev[item]}), {} );
+  protected ChangeKey(schema: JSONSchema, propertyPath: string, oldKey: string, newKey: string): any {
 
-    // for top level properties
-    if (propertyPath.split('.').length === 1) {
-      return Object.keys(schema).reduce( (acc, curr, idx, arr) =>
-        curr === oldKey ? ({ ...acc, [newKey]: schema[oldKey] }) : ({...acc, [curr]: schema[curr]}), {} );
-    }
-
-    // for nested properties
-    if (propertyPath.split('.').length > 1) {
-      return propertyPath.split('.').reduce( (acc, curr, idx, arr) => {
+    return propertyPath.split('.').reduce( (acc, curr, idx, arr) => {
           if ( idx === (arr.length - 1) && acc ) {
 
-            const idxPos: number = arr.indexOf(objToChange);
-            const idxPosArr: Array<string> = [ ...arr.splice(0, idxPos + 1) ];
+           // acc = this.renameKeys({[oldKey]: newKey}, acc);
 
-            DotNotationUtil.SetValue(schema, idxPosArr.join('.'), this.renameKeys({[oldKey]: newKey}, acc));
+           let propToChange: string = '';
 
-            return schema;
-            // return {
-            //   ...schema, [objToChange]: this.renameKeys({[oldKey]: newKey}, acc)
-            // };
+           if (propertyPath.length === 1) {
+            propToChange = propertyPath;
+           } else {
+             const propArr: Array<any> = propertyPath.split('.');
+             propToChange = propArr[propArr.length - 2];
+           // propToChange = propertyPath.split('.').pop();
+           }
+
+          //  const newObj = {
+          //   ...propPath,
+          //   [propToChange]: this.renameKeys({[oldKey]: newKey}, acc)
+          // };
+
+          //  const newObj = {
+          //   ...[propToChange],
+          //   [propToChange]: this.renameKeys({[oldKey]: newKey}, acc)
+          // };
+
+          // return newObj;
+
+           schema.properties = {
+              ...schema.properties,
+              address: this.renameKeys({[oldKey]: newKey}, acc)
+            };
           }
-          return acc ? acc[curr] : null; // if acc, then start additional iterations with acc[curr]
+          return acc ? acc[curr] : null; // if prev, then start the loop over with prev[curr]
       }, schema); // first item to start the loop
-    }
   }
 
-  /**
-   * Rename property keys
-   */
   protected renameKeys = (keysMap, obj) => {
+
     return Object
             .keys(obj)
             .reduce((acc, key) => {
+
               const renamedObject = {
                 [keysMap[key] || key]: obj[key]
               };
-              return {
+
+              const r = {
                 ...acc,
                 ...renamedObject
               };
+
+              debugger;
+              return r;
+
             }, {});
   }
+
+/**
+ * Using dot notation, iterate the object and change the key value
+ *
+ * @param schema JSON object
+ *
+ * @param dotPath Dot notation path
+ *
+ * @param newVal Changed value
+ */
+// protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal: string): void {
+//     return dotPath.split('.').reduce( (prev, curr, idx, arr) => {
+//       if ( idx === (arr.length - 1) && prev ) {
+//           prev[curr] = newVal;
+//       }
+
+//       return prev ? prev[curr] : null;
+//   }, schema);
+// }
+
+ /**
+  * Renaming JSON properties keys
+  *
+  * @param json JSON to search through
+  *
+  * @param oldKey Old property key to search on
+  *
+  * @param newKey New key that replaces the old one
+  *
+  */
+ protected renameJSONKey(json, oldKey: string, newKey: string): any {
+   return Object.keys(json).reduce((s, item) =>
+    item === oldKey ? ({ ...s, [newKey]: json[oldKey] }) : ({...s, [item]: json[item]}), {} );
+ }
 
  /**
   * Update the current schema
@@ -279,11 +361,8 @@ protected setupForm(): void {
         const dotNotatedPath: string = pathArr.join('.');
 
         // const value: string = this.getNestedObjectValue(schema, pathArr);
-       // const value: string = DotNotationUtil.GetValue(schema, pathArr);
-        const value: string = this.testGetValue(schema, pathArr.join('.'));
+        const value: string = DotNotationUtil.GetValue(schema, pathArr);
         let dataType: string = '';
-
-        const parentObj: string = pathArr.length === 1 ? pathArr[0] : pathArr[pathArr.length - 2];
 
         if (value) {
           dataType = (IsDataTypeUtil.GetDataType(value));
@@ -301,8 +380,6 @@ protected setupForm(): void {
             dataType, // data type
             idx, // parent/child level
             dotNotatedPath, // dotnotated path
-            parentObj, // parent object of property
-            value // set previous value
           ));
       });
     });
@@ -315,20 +392,17 @@ protected setupForm(): void {
     });
   }
 
-  protected testGetValue(obj: JSON | object, propertyPath: string): string {
-    /**
-     * @param acc(accumulator) returned object to iterate
-     *
-     * @param curr(current value) current element being processed in the array
-     */
-    return propertyPath.split('.').reduce( (acc, curr, idx, arr) => {
-      if ( idx === (arr.length - 1) && acc ) {
-        return acc[curr];
-      }
-      // return a new accumulator to the reduce callback(starts the loop with the next curr value)
-      return acc ? acc[curr] : null;
+  // /**
+  //  * Drill down to find nested objects
+  //  *
+  //  * @param nestedObj object to test
+  //  *
+  //  * @param pathArr array of names used to drill into objects(a.b.c, etc.)
+  //  */
+  // protected getNestedObjectValue(nestedObj, pathArr: Array<string>): any {
+  //   const val = pathArr.reduce((obj, key) =>
+  //       (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
 
-    // inital value to use as the first argument(this is the item to start the iteration with)
-  }, obj);
-  }
+  //   return val;
+  // }
 }

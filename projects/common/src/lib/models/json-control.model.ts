@@ -31,6 +31,22 @@ export class JSONControlModel {
     public Indent?: number;
 
     /**
+     * Parent Object
+     */
+    public ParentObj?: string;
+
+    /**
+     * Previous Value
+     */
+
+     public PreviousValue: string | object | Array<any>;
+
+    /**
+     * Unique identifier
+     */
+    public UUID: string;
+
+    /**
      * Property value
      */
     // public Value: string | Array<any> | object | unknown;
@@ -43,14 +59,18 @@ export class JSONControlModel {
 
     // need to use destructured parameters
     constructor(
+        uuid: string,
         key: string,
         value: string,
         controlName: string,
         indent?: number,
         valueDataType?: string,
         level?: number,
-        dotNotatedPath?: string)
+        dotNotatedPath?: string,
+        parentObj?: string,
+        previousValue?: string | object | Array<any>)
         {
+            this.UUID = uuid;
             this.ControlName = controlName;
             this.DotNotatedPath = dotNotatedPath;
             this.Indent = indent;
@@ -58,5 +78,7 @@ export class JSONControlModel {
             this.Level = level;
             this.Value = value;
             this.ValueDataType = valueDataType;
+            this.ParentObj = parentObj;
+            this.PreviousValue = previousValue;
         }
 }
