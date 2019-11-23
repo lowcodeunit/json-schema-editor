@@ -39,11 +39,6 @@ export class AppComponent implements OnInit {
 
     schema.default = {
       $schema: 'http://json-schema.org/draft-07/schema#',
-      $id: 'root',
-      definitions: {},
-      description: 'Test JSON editor',
-      title: 'JSON Schema Test',
-      type: 'object',
       properties: {
         address: {
           $id: '#/properties/address',
@@ -54,22 +49,47 @@ export class AppComponent implements OnInit {
           },
           shannonArray: [
             'shannon',
+            'wayne',
             'bruns'
-          ],
-          required: [
-            'street_address',
-            'city',
-            'state'
           ]
         },
-        billing_address: {
-          $ref: '#/properties/address'
-        },
-        shipping_address: {
-          $ref: '#/properties/address'
-        }
       }
     };
+
+    // schema.default = {
+    //   $schema: 'http://json-schema.org/draft-07/schema#',
+    //   $id: 'root',
+    //   definitions: {},
+    //   description: 'Test JSON editor',
+    //   title: 'JSON Schema Test',
+    //   type: 'object',
+    //   properties: {
+    //     address: {
+    //       $id: '#/properties/address',
+    //       type: 'object',
+    //       person: {
+    //         firstName: 'Shannon',
+    //         lastName: 'Bruns'
+    //       },
+    //       shannonArray: [
+    //         'shannon',
+    //         'wayne',
+    //         'bruns'
+    //       ],
+    //       required: [
+    //         'street_address',
+    //         'city',
+    //         'state'
+    //       ]
+    //     },
+    //     billing_address: {
+    //       $ref: '#/properties/address'
+    //     },
+    //     shipping_address: {
+    //       $ref: '#/properties/address'
+    //     }
+    //   }
+    // };
 
     // schema.default = 
     // {

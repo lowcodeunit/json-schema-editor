@@ -36,9 +36,12 @@ export class JSONControlModel {
     public ParentObj?: string;
 
     /**
+     * Previous key value
+     */
+    public PreviousKey: string;
+    /**
      * Previous Value
      */
-
      public PreviousValue: string | object | Array<any>;
 
     /**
@@ -61,6 +64,7 @@ export class JSONControlModel {
     constructor(
         uuid: string,
         key: string,
+        previousKey: string,
         value: string,
         controlName: string,
         indent?: number,
@@ -80,5 +84,6 @@ export class JSONControlModel {
             this.ValueDataType = valueDataType;
             this.ParentObj = parentObj;
             this.PreviousValue = previousValue;
+            this.PreviousKey = previousKey;
         }
 }
