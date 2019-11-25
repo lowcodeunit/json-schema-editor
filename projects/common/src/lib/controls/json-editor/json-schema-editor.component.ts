@@ -11,15 +11,6 @@ import { JSONControlModel } from '../../models/json-control.model';
 })
 export class JSONSchemaEditorComponent implements OnInit {
 
-  keysMap = {
-    name: 'firstName',
-    job: 'passion'
-};
-objKeysMap = {
-    name: 'Bobo',
-    job: 'Front-End Master'
-};
-
   private _jsonSchema: JSONSchema;
   /**
    * JSON Schema input hook
@@ -62,7 +53,7 @@ public get JSONFields(): any {
 /**
  * Array to store dynamic control values
  */
-public DynamicControlItems: Array<JSONControlModel>;
+public DynamicControls: Array<JSONControlModel>;
 
 /**
  * Height of closed expansion panel header
@@ -89,7 +80,7 @@ public InnerTextTest: string;
   constructor(protected formBuilder: FormBuilder) {
 
     this.PanelOpenState = false;
-    this.DynamicControlItems = [];
+    this.DynamicControls = [];
     this.ExpansionPanelClosedHeight = '30px';
   }
 
@@ -102,7 +93,7 @@ public InnerTextTest: string;
   }
 
   public ControlSelected(itm: JSONControlModel, idx: number): void {
-    console.log('control selected', itm);
+    // console.log('control selected', itm);
     // this.query = '$schema';
     // this.highlight();
     // this.JSONSchema.default[itm.Key] = itm.Key;
@@ -127,21 +118,28 @@ protected setupForm(): void {
   */
  protected addNewControl(newItem: JSONControlModel) {
 
+  // maybe look here for a different way to build dynamic controls
+  // https://egghead.io/lessons/angular-dynamically-create-multiple-formcontrols-from-a-data-set-in-angular
+
   // push new item to a storage array
-  this.DynamicControlItems.push(newItem);
+  this.DynamicControls.push(newItem);
 
   // destructor newItem, this prevents having to do: newItem.ControlName, etc.
-  const { ControlName, DotNotatedPath, Indent, Key, Level, Value, ValueDataType } = newItem;
+  const { ControlName, DotNotatedPath, Indent, Key, Level, UUID, Value, ValueDataType, ParentObj, PreviousValue, PreviousKey } = newItem;
 
   const fg: FormGroup = this.formBuilder.group(
     {
+      UUID: [UUID],
       ControlName: [Key],
       DotNotatedPath: [DotNotatedPath],
       Indent: [Indent],
       Key: [Key],
+      PreviousKey: [PreviousKey],
       Level: [Level],
       Value: [Value],
-      ValueType: [ValueDataType]
+      ValueType: [ValueDataType],
+      ParentObj: [ParentObj],
+      PreviousValue: [PreviousValue]
     }
   );
 
@@ -157,103 +155,165 @@ protected setupForm(): void {
   * Subscribing to the FormGroup notifies us of what
   * control actually changed and not the whole form
   */
- protected onChanges(fg: FormGroup): void {
+//  protected onChanges(fg: FormGroup): void {
+//   fg.valueChanges.subscribe((val: JSONControlModel) => {
+
+//     const json: JSONSchema = this.JSONSchema;
+//     const currKey: string = val.DotNotatedPath.split('.').pop();
+
+//     for (let control of this.JSONSchemaEditorForm.controls.JSONFields.value) {
+//       if (control.UUID === val.UUID) {
+
+//         const pathArr: Array<string> = val.DotNotatedPath.split('.');
+
+//         if (currKey !== val.Key) {
+//           json.default = DotNotationUtil.SetKeyValue(json.default, val.DotNotatedPath, currKey, val.Key, val.ParentObj);
+
+//           pathArr.pop();
+//           pathArr.push(val.Key);
+//           val.DotNotatedPath = pathArr.join('.');
+
+//           this.JSONSchemaEditorForm.controls.JSONFields['controls'].forEach(el => {
+
+//             if (el.value.UUID === val.UUID) {
+//               // update DotNotatedPath so it's the same as the new key value
+//               el.controls['DotNotatedPath'].value = val.DotNotatedPath;
+
+//               // add this here to test - shannon
+//               // this.updateDynamicControl(val);
+//              // this.test(el);
+//             }
+
+//             if (el.value.ParentObj === val.PreviousKey) {
+//               el.controls['ParentObj'].value = val.Key;
+
+//               // add this here to test - shannon
+//               // this.updateDynamicControl(val);
+//              // this.test(el);
+
+//               let dotPathArr: Array<string> = el.controls['DotNotatedPath'].value.split('.');
+
+//               if (dotPathArr.length > 1) {
+//                dotPathArr = dotPathArr.map( (x: string, idx: number, arr: Array<string>) => {
+//                   return (x === val.PreviousKey) ? val.Key : x;
+//                   if (x === val.PreviousKey) {
+//                    // console.log('val.Key', val.Key, arr);
+//                     return val.Key;
+//                   } else {
+//                    // console.log('x', x, arr);
+//                     return x;
+//                   }
+//                });
+//                el.controls['DotNotatedPath'].value = dotPathArr.join('.');
+//               // this.test(el);
+//              }
+
+//             }
+//             el.controls['PreviousKey'].value = val.Key;
+//             this.test(el);
+//           });
+
+//           // this.updateDynamicControl(val);
+
+//           // if current key and val.key are the same, then we know
+//           // the value changed and not the key: need to revisit this - shannon
+//           if (currKey === val.Key) {
+//             DotNotationUtil.SetValue(json.default, val.DotNotatedPath, val.Value);
+//           }
+//         }
+//       }
+//     }
+
+//     this.updateSchemaControl(json);
+//   });
+// }
+
+protected onChanges(fg: FormGroup): void {
   fg.valueChanges.subscribe((val: JSONControlModel) => {
 
-    const json: JSONSchema = { ...this.JSONSchema };
+    const json: JSONSchema = this.JSONSchema;
+    const currKey: string = val.DotNotatedPath.split('.').pop();
 
-    // json.default[val.DotNotatedPath] = val.Value;
+    for (let control of this.JSONSchemaEditorForm.controls.JSONFields.value) {
+      if (control.UUID === val.UUID) {
 
-    DotNotationUtil.ValueChange(json.default, val.DotNotatedPath, val.Value);
+        const pathArr: Array<string> = val.DotNotatedPath.split('.');
 
-    const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
-    // console.log(this.renameKeys({[key]: [val.Key]}, json.default));
-    this.ChangeKey(json.default, val.DotNotatedPath, key, val.Key);
+        // check if property key changed and update
+        if (currKey !== val.Key) {
+          json.default = DotNotationUtil.SetKeyValue(json.default, val.DotNotatedPath, currKey, val.Key, val.ParentObj);
 
+          // update the last item in DotNotatedPath with the new key name
+          pathArr.pop();
+          pathArr.push(val.Key);
+          val.DotNotatedPath = pathArr.join('.');
 
-    // when changing the key value, change the key name
-    // const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
-   // json.default = this.renameJSONKey( json.default, key, val.Key );
+          // loop over each form group control and update its values
+          this.JSONSchemaEditorForm.controls.JSONFields['controls'].forEach(formGroup => {
+
+            if (formGroup.value.UUID === val.UUID) {
+              formGroup.controls['DotNotatedPath'].value = val.DotNotatedPath;
+              this.updateDynamicControlDotPaths(currKey, val.Key);
+            }
+          });
+        }
+
+        // check if property value changed and update
+        if (currKey === val.Key) {
+          DotNotationUtil.SetValue(json.default, val.DotNotatedPath, val.Value);
+        }
+      }
+    }
+
     this.updateSchemaControl(json);
   });
 }
 
-// schema.properties.address = this.renameJSONKey(prev, oldKey, newKey) : ({...s, [item]: prev[item]}), {} );
-  protected ChangeKey(schema: JSONSchema, dotPath: string, oldKey: string, newKey: string): any {
+/**
+ * Iterate DynamicControls and update its DotNotatedPath with new key name
+ *
+ * @param currKey current key name
+ *
+ * @param newKey updated key name
+ */
+protected updateDynamicControlDotPaths(currKey: string, newKey: string): void {
+  for (const ctrl of this.DynamicControls) {
+    ctrl.DotNotatedPath.split('.').find((itm, idx, arr) => {
+      if (itm === currKey) {
+        arr[arr.indexOf(itm)] = newKey;
+      }
+      ctrl.DotNotatedPath = arr.join('.');
+      ctrl.ParentObj = arr[0];
+    });
 
-    dotPath.split('.').reduce( (prev, curr, idx, arr) => {
-          if ( idx === (arr.length - 1) && prev ) {
-            console.log(prev);
-            // const key = Object.keys(json.default)[Object.values(json.default).indexOf(val.Value)];
-            console.log('rename key', this.renameKeys({[oldKey]: newKey}, prev));
-           // prev = this.renameKeys({[oldKey]: newKey}, prev);
-            // return Object.keys(prev).reduce((s, item) =>
-            //   item === oldKey ?
-            //   this.renameJSONKey(prev, oldKey, newKey) : ({...s, [item]: prev[item]}), {} );
-          }
-          return prev ? prev[curr] : null; // if prev, then start the loop over with prev[curr]
-      }, schema); // first item to start the loop
+    this.JSONSchemaEditorForm.controls.JSONFields['controls'].forEach(fgCtrl => {
+      if (fgCtrl.controls['UUID'].value === ctrl.UUID) {
+        fgCtrl.controls['DotNotatedPath'].value = ctrl.DotNotatedPath;
+        fgCtrl.controls['ParentObj'].value = ctrl.ParentObj;
+      }
+    });
   }
-
-
-  
-  protected renameKeys = (keysMap, obj) => {
-
-    debugger;
-
-    return Object 
-            .keys(obj)
-            .reduce((acc, key) => {
-
-              debugger;
-
-              const renamedObject = {
-                [keysMap[key] || key]: obj[key]
-              };
-
-              debugger;
-
-              return {
-                ...acc,
-                ...renamedObject
-              };
-
-            }, {});
-  }
+}
 
 /**
- * Using dot notation, iterate the object and change the key value
+ * Update dynamic control with new values
  *
- * @param schema JSON object
- *
- * @param dotPath Dot notation path
- *
- * @param newVal Changed value
+ * @param val changed value
  */
-// protected ChangeValueWithDotNotation(schema: JSONSchema, dotPath: string, newVal: string): void {
-//     return dotPath.split('.').reduce( (prev, curr, idx, arr) => {
-//       if ( idx === (arr.length - 1) && prev ) {
-//           prev[curr] = newVal;
-//       }
+// protected updateDynamicControl(val: JSONControlModel): void {
+//   for (const dynControl of this.DynamicControls) {
 
-//       return prev ? prev[curr] : null;
-//   }, schema);
+//     if (dynControl.UUID === val.UUID) {
+//       dynControl.DotNotatedPath = val.DotNotatedPath;
+//       dynControl.Key = val.Key;
+//     }
+
+//     if (dynControl.ParentObj === val.PreviousKey) {
+//       dynControl.ParentObj = val.Key;
+
+//     }
+//   }
 // }
-
- /**
-  * Renaming JSON properties keys
-  *
-  * @param json JSON to search through
-  *
-  * @param oldKey Old property key to search on
-  *
-  * @param newKey New key that replaces the old one
-  *
-  */
- protected renameJSONKey(json, oldKey: string, newKey: string): any {
-   return Object.keys(json).reduce((s, item) =>
-    item === oldKey ? ({ ...s, [newKey]: json[oldKey] }) : ({...s, [item]: json[item]}), {} );
- }
 
  /**
   * Update the current schema
@@ -290,51 +350,55 @@ protected setupForm(): void {
       // loop of path indices(the dotnotated path)
       pathIndices.forEach((indices: string, idx: number, arr: Array<string>) => {
 
+        // check if item already exists, so there aren't duplicates
+        if (this.DynamicControls.length > 0) {
+          for (const ctrl of this.DynamicControls) {
+            if (Object.is(ctrl.Key, indices)) {
+              return;
+            }
+          }
+        }
+
         // need to build the path to get the item value
         // pathArr is also used to get the correct data path of each item
         const pathArr: Array<string> = arr.slice(0, idx + 1).map(i => {
           return i;
         });
 
-        // create a dot-notated-path(properties.address.name) for each item
-        // doing this here, because the path from flatMap is a little off
         const dotNotatedPath: string = pathArr.join('.');
 
-        // const value: string = this.getNestedObjectValue(schema, pathArr);
-        const value: string = DotNotationUtil.GetValue(schema, pathArr);
+        const value: string = DotNotationUtil.GetValue(schema, pathArr.join('.'));
+
         let dataType: string = '';
+
+        const parentObj: string = pathArr.length === 1 ? pathArr[0] : pathArr[pathArr.length - 2];
 
         if (value) {
           dataType = (IsDataTypeUtil.GetDataType(value));
         }
 
-      //  const { ControlName, DotNotatedPath, Indent, Key, Level, Value, ValueDataType } = newItem;
-
-        this.addNewControl(
-          new JSONControlModel(
-            indices, // key
-            value, // value
-            indices, // control name
-            20 * idx, // indent(x offset)
-            dataType, // data type
-            idx, // parent/child level
-            dotNotatedPath, // dotnotated path
-          ));
+        const newControl: JSONControlModel = new JSONControlModel(
+          this.createUUID(), // UUID
+          indices, // key
+          indices, // previous key
+          value, // value
+          indices, // control name
+          20 * idx, // indent(x offset)
+          dataType, // data type
+          idx, // parent/child level
+          dotNotatedPath, // dotnotated path
+          parentObj, // parent object of property
+          value // set previous value
+        );
+        this.addNewControl(newControl);
       });
     });
   }
 
-  // /**
-  //  * Drill down to find nested objects
-  //  *
-  //  * @param nestedObj object to test
-  //  *
-  //  * @param pathArr array of names used to drill into objects(a.b.c, etc.)
-  //  */
-  // protected getNestedObjectValue(nestedObj, pathArr: Array<string>): any {
-  //   const val = pathArr.reduce((obj, key) =>
-  //       (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
-
-  //   return val;
-  // }
+  protected createUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 }
