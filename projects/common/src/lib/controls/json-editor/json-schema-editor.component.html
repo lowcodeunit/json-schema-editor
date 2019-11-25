@@ -16,8 +16,8 @@
       <mat-card-content>
           <div formArrayName="JSONFields">
 
-                <!--TestItems instead of DynamicControlItems-->
-                <div *ngFor="let itm of DynamicControlItems; let i = index">
+                <!--TestItems instead of DynamicControls-->
+                <div *ngFor="let itm of DynamicControls; let i = index">
                         <div [formGroupName]="i" fxLayout="row">
                           <mat-accordion class="margin-bottom-2" [ngStyle]="{'margin-left': itm.Indent +'px'}">
                             <mat-expansion-panel (opened)="PanelOpenState = true" (closed)="PanelOpenState = false">
@@ -75,7 +75,7 @@
                           </mat-accordion>
                         </div>
                     </div>
-              <!-- <div *ngFor="let itm of DynamicControlItems; let i=index">
+              <!-- <div *ngFor="let itm of DynamicControls; let i=index">
                   <div [formGroupName]="i" fxLayout="row">
                     <mat-json-editor class="margin-bottom-3" [ngStyle]="{'margin-left': itm.Indent +'px'}">
                       <mat-expansion-panel (opened)="PanelOpenState = true" (closed)="PanelOpenState = false">
