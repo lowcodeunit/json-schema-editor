@@ -1,4 +1,3 @@
-import { ColorPickerService } from './../../../common/src/lib/services/color-picker.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { JSONSchema, Address } from '@lcu/common';
@@ -6,55 +5,47 @@ import { JSONSchema, Address } from '@lcu/common';
 @Component({
   selector: 'lcu-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: ['./app.component.scss']
 })
-
 export class AppComponent implements OnInit {
-
   public JSONSchema: JSONSchema;
   public ThemeClass: BehaviorSubject<string>;
 
-  constructor(protected colorPickerService: ColorPickerService) {
-
-  }
+  constructor() {}
 
   public ngOnInit(): void {
     this.resetTheme();
-    setTimeout(() => {
-        this.JSONSchema = this.getSchema();
-      }, 1000);
+    
+    this.JSONSchema = this.getSchema();
   }
 
   /**
    * Set default theme
    */
-  protected resetTheme(): void {
-    // this.changeTheme('contrast-theme');
-    this.ThemeClass = this.colorPickerService.GetColorClass();
-   }
+  protected resetTheme(): void {}
 
   protected getSchema(): JSONSchema {
-
-    const schema: JSONSchema = new JSONSchema();
-
-    schema.default = {
+    const schema: JSONSchema = {
+      $id: 'https://example.com/person.schema.json',
       $schema: 'http://json-schema.org/draft-07/schema#',
+      title: 'Person',
+      type: 'object',
       properties: {
-        address: {
-          $id: '#/properties/address',
-          type: 'object',
-          person: {
-            firstName: 'Shannon',
-            lastName: 'Bruns'
-          },
-          shannonArray: [
-            'shannon',
-            'wayne',
-            'bruns'
-          ]
+        firstName: {
+          type: 'string',
+          description: 'The person\'s first name.'
         },
+        lastName: {
+          type: 'string',
+          description: 'The person\'s last name.'
+        },
+        age: {
+          description: 'Age in years which must be equal to or greater than zero.',
+          type: 'integer',
+          minimum: 0
+        }
       }
-    };
+    } as JSONSchema;
 
     // schema.default = {
     //   $schema: 'http://json-schema.org/draft-07/schema#',
@@ -91,7 +82,7 @@ export class AppComponent implements OnInit {
     //   }
     // };
 
-    // schema.default = 
+    // schema.default =
     // {
     //   'definitions': {},
     //   '$schema': 'http://json-schema.org/draft-07/schema#',
@@ -222,22 +213,21 @@ export class AppComponent implements OnInit {
     //   }
     // };
 
+    //   schema.default =
+    //  {
+    //   $schema: 'http://json-schema.org/draft-07/schema#',
+    //   title: 'JSON Schema Test',
 
-  //   schema.default =
-  //  {
-  //   $schema: 'http://json-schema.org/draft-07/schema#',
-  //   title: 'JSON Schema Test',
-
-  //   definitions: {
-  //     address: {
-  //       properties: {
-  //         street_address: { type: 'string' },
-  //         city:           { type: 'string' },
-  //         state:          { type: 'string' }
-  //       }
-  //     }
-  //   }
-  // };
+    //   definitions: {
+    //     address: {
+    //       properties: {
+    //         street_address: { type: 'string' },
+    //         city:           { type: 'string' },
+    //         state:          { type: 'string' }
+    //       }
+    //     }
+    //   }
+    // };
     return schema;
   }
 }

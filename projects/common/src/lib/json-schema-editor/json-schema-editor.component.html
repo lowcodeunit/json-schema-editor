@@ -1,115 +1,129 @@
-<div>
-	<div [fxShow]="!Nested" *ngIf="!HideSchemaTitle">
-		<div *ngIf="!HideNote">
-			<strong>NOTE: Changing or deleting properties will remove the property from all existing functions</strong>
+<div *ngIf="Schema">
+  <div>
+    <mat-form-field class="mat-full-width">
+      <input
+        type="text"
+        matInput
+        [placeholder]="SchemaLookupPlaceholder"
+        [(ngModel)]="Schema.title"
+        required
+        #schemaTitle
+      />
+    </mat-form-field>
+  </div>
 
-			<br /><br />
-		</div>
-		<mat-form-field class="mat-full-width">
-			<input type="text" matInput [name]="PropertyKey + 'schemaTitle'" [placeholder]="SchemaLookupPlaceholder"
-				   [ngModel]="Schema.title" (ngModelChange)="ValueChanged(Schema, 'title', $event)" required #schemaTitle />
-		</mat-form-field>
-	</div>
+  <div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
+    <h3>
+      Properties
+      <button type="button" mat-button button color="warn" (click)="AddProperty()"><mat-icon>add</mat-icon></button>
+    </h3>
 
-	<div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
-		<h3>
-			Properties
-			<button type="button" mat-button button color="warn" (click)="AddProperty()"><mat-icon>add</mat-icon></button>
-		</h3>
+    <mat-card
+      style="cursor:default !important;"
+      class="no-pointer"
+      *ngFor="let propName of SortedProperties; let i = index"
+      dnd-sortable
+      [sortableIndex]="i"
+      (dragend)="SortSuccess()"
+    >
+      <ng-container *ngIf="Schema.properties[propName]; let prop">
+        <mat-card-content>
+          <div fxLayout="row">
+            <div fxFlex="auto">
+              <h3 [fxShow]="!IsEditingSettings(prop)">{{ propName }}</h3>
 
-		<mat-card style="cursor:default !important;" class="no-pointer" *ngFor="let prop of PivotProperties(); let i = index" dnd-sortable [sortableIndex]="i" (dragend)="SortSuccess($event)">
-			<mat-card-content>
-				<div fxLayout="row">
-					<div fxFlex="auto">
-						<h3 [fxShow]="!IsEditingSettings(prop)">{{prop.title}}</h3>
+              <mat-form-field [fxShow]="IsEditingSettings(prop)">
+                <input
+                  type="text"
+                  matInput
+                  [name]="propName + 'PropName'"
+                  [value]="propName"
+                  placeholder="Property Name"
+                  required
+                  #propNameFld
+                />
+              </mat-form-field>
+            </div>
 
-						<mat-form-field [fxShow]="IsEditingSettings(prop)">
-							<input type="text" matInput [name]="PropertyKey + prop.title + 'PropName'" placeholder="Property Name"
-								   [(ngModel)]="prop.title" (keyup)="EmitChange()" required />
-						</mat-form-field>
-					</div>
+            <ng-container *ngIf="!IsEditingSettings(prop)">
+              <div dnd-sortable-handle fxFlex="100px">
+                <button type="button" mat-button color="warn">
+                  <mat-icon>reorder</mat-icon>
+                </button>
+              </div>
 
-					<ng-container *ngIf="!IsEditingSettings(prop)">
-						<div dnd-sortable-handle fxFlex="100px">
-							<button type="button" mat-button color="warn">
-								<mat-icon>reorder</mat-icon>
-							</button>
-						</div>
+              <div (click)="SetEditingSettings(prop)" fxFlex="100px">
+                <button type="button" mat-button color="primary">
+                  <mat-icon>mode_edit</mat-icon>
+                </button>
+              </div>
 
-						<div (click)="SetEditingSettings(prop)" fxFlex="100px">
-							<button type="button" mat-button color="primary">
-								<mat-icon>mode_edit</mat-icon>
-							</button>
-						</div>
+              <ng-content select="no-edit-actions"></ng-content>
+            </ng-container>
 
-						<ng-content select="no-edit-actions"></ng-content>
-					</ng-container>
+            <ng-container *ngIf="IsEditingSettings(prop)">
+              <div *ngIf="IsEditingSettings(prop)" (click)="RemoveProperty(i)" fxFlex="100px">
+                <button type="button" mat-button color="warn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
 
-					<ng-container *ngIf="IsEditingSettings(prop)">
-						<div *ngIf="IsEditingSettings(prop)" (click)="RemoveProperty(i)" fxFlex="100px">
-							<button type="button" mat-button color="warn">
-								<mat-icon>delete</mat-icon>
-							</button>
-						</div>
+              <div (click)="SaveProperty(propName, prop, propNameFld.value)" fxFlex="100px">
+                <button type="button" mat-button color="primary">
+                  <mat-icon>save</mat-icon>
+                </button>
+              </div>
 
-						<div (click)="SetEditingSettings(prop)" fxFlex="100px">
-							<button type="button" mat-button color="primary">
-								<mat-icon>save</mat-icon>
-							</button>
-						</div>
+              <ng-content select="edit-actions"></ng-content>
+            </ng-container>
+          </div>
 
-						<ng-content select="edit-actions"></ng-content>
-					</ng-container>
-				</div>
+          <div [fxShow]="IsEditingSettings(prop)">
+            <div>
+              <mat-form-field>
+                <mat-select
+                  placeholder="Property Type"
+                  [name]="propName + 'PropType'"
+                  [(ngModel)]="prop.type"
+                >
+                  <mat-option value>No Type</mat-option>
+                  <mat-option value="null">Null</mat-option>
+                  <mat-option value="boolean">Boolean</mat-option>
+                  <mat-option value="object">Object</mat-option>
+                  <mat-option value="array">Array</mat-option>
+                  <mat-option value="number">Number</mat-option>
+                  <mat-option value="string">String</mat-option>
+                  <mat-option value="integer">Integer</mat-option>
+                </mat-select>
+              </mat-form-field>
 
-				<div [fxShow]="IsEditingSettings(prop)">
-					<div>
-						<mat-form-field>
-							<mat-select placeholder="Property Type" [name]="PropertyKey + prop.title + 'PropType'"
-										[(ngModel)]="prop.type" (change)="SchemaPropertyTypeChanged(prop)">
-								<mat-option value>No Type</mat-option>
-								<mat-option value="null">Null</mat-option>
-								<mat-option value="boolean">Boolean</mat-option>
-								<mat-option value="object">Object</mat-option>
-								<mat-option value="array">Array</mat-option>
-								<mat-option value="number">Number</mat-option>
-								<mat-option value="string">String</mat-option>
-								<mat-option value="integer">Integer</mat-option>
-							</mat-select>
-						</mat-form-field>
-
-						<!--<mat-checkbox [(ngModel)]="prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropId'">
+              <!--<mat-checkbox [(ngModel)]="prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropId'">
 							Is Identifier
 						</mat-checkbox>-->
-					</div>
+            </div>
 
-					<div *ngIf="ShowValidations">
-						<h4>Validations</h4>
+            <div *ngIf="ShowValidations">
+              <h4>Validations</h4>
 
-						<!--<mat-checkbox [(ngModel)]="prop.Required" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropRequired'">
+              <!--<mat-checkbox [(ngModel)]="prop.Required" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropRequired'">
 							Required
 						</mat-checkbox>-->
-					</div>
+            </div>
 
-					<div *ngIf="prop.type == 'object'">
-						<h4>Object Schema</h4>
+            <div *ngIf="prop.type == 'object'">
+              <h4>Object Schema</h4>
 
-						<lcu-json-schema-editor 
-							(propertyTypeChanged)="EmitPropertyTypeChanged(prop.title)" 
-							(propertyAdded)="EmitPropertyAdded()" 
-							(propertyDeleted)="EmitPropertyDeleted()" 
-							[schema]="prop.oneOf[0]" 
-							(schemaChanged)="PropertySchemaChanged(prop, $event)" 
-							[show-validations]="ShowValidations"
-							[prop-key]="prop.title" 
-							[nested]="true" 
-							[parent-title]="prop.title">
-						</lcu-json-schema-editor>
-					</div>
-				</div>
-			</mat-card-content>
-		</mat-card>
+              <lcu-json-schema-editor
+                [(schema)]="prop.oneOf[0]"
+                [show-validations]="ShowValidations"
+              >
+              </lcu-json-schema-editor>
+            </div>
+          </div>
+        </mat-card-content>
+      </ng-container>
+    </mat-card>
 
-		<p *ngIf="!Schema.properties || PivotProperties().length == 0">Add a New Property to Get Started</p>
-	</div>
+    <p *ngIf="!Schema.properties || SortedProperties?.length == 0">Add a New Property to Get Started</p>
+  </div>
 </div>

@@ -9,39 +9,24 @@ import { JSONSchema } from '@lcu/common';
 })
 export class JSONSchemaEditorComponent implements OnInit {
   // 	Fields
+  protected schema: JSONSchema;
 
   // 	Properties
   public CurrentlyEditingSettingsFor: JSONSchema;
 
-  @Input('hide-schema-title')
-  public HideSchemaTitle: boolean;
-
-  @Input('hide-note')
-  public HideNote: boolean;
-
-  @Input('nested')
-  public Nested: boolean;
-
-  @Input('parent-title')
-  public ParentTitle: string;
-
-  @Input('prop-key')
-  public PropertyKey: string;
-
   @Output('schemaChange')
   public Changed: EventEmitter<JSONSchema>;
 
-  @Output('propertyAdded')
-  public PropertyAdded: EventEmitter<JSONSchema>;
-
-  @Output('propertyTypeChanged')
-  public PropertyTypeChanged: EventEmitter<string>;
-
-  @Output('propertyDeleted')
-  public PropertyDeleted: EventEmitter<JSONSchema>;
-
   @Input('schema')
-  public Schema: JSONSchema;
+  public get Schema(): JSONSchema {
+    return this.schema;
+  }
+
+  public set Schema(schema: JSONSchema) {
+    this.schema = schema;
+
+    this.PivotProperties();
+  }
 
   @Input('schema-lookup-placeholder')
   public SchemaLookupPlaceholder: string;
@@ -54,12 +39,6 @@ export class JSONSchemaEditorComponent implements OnInit {
   // 	Constructors
   constructor() {
     this.Changed = new EventEmitter();
-
-    this.PropertyAdded = new EventEmitter();
-
-    this.PropertyTypeChanged = new EventEmitter();
-
-    this.PropertyDeleted = new EventEmitter();
 
     this.SchemaLookupPlaceholder = 'Schema Type Lookup';
   }
@@ -77,20 +56,6 @@ export class JSONSchemaEditorComponent implements OnInit {
 
       this.EmitChange();
     }
-
-    this.Schema.type = 'object';
-
-    if (this.Nested) {
-      this.Schema.title = this.ParentTitle;
-    }
-
-    const self = this;
-
-    this.SortedProperties = [];
-
-    this.PivotProperties().forEach(function(prop) {
-      self.SortedProperties.push(prop.id);
-    });
   }
 
   // 	API Methods
@@ -110,24 +75,10 @@ export class JSONSchemaEditorComponent implements OnInit {
     this.SetEditingSettings(prop);
 
     this.EmitChange();
-
-    this.EmitPropertyAdded();
   }
 
   public EmitChange() {
     this.Changed.emit(this.Schema);
-  }
-
-  public EmitPropertyAdded() {
-    this.PropertyAdded.emit(this.Schema);
-  }
-
-  public EmitPropertyTypeChanged(propertyId: string) {
-    this.PropertyTypeChanged.emit(propertyId);
-  }
-
-  public EmitPropertyDeleted() {
-    this.PropertyDeleted.emit(this.Schema);
   }
 
   public IsEditingSettings(prop: JSONSchema) {
@@ -135,21 +86,9 @@ export class JSONSchemaEditorComponent implements OnInit {
   }
 
   public PivotProperties() {
-    const keys = Object.keys(this.Schema.properties);
-
-    return keys.map(k => this.Schema.properties[k]);
-  }
-
-  public SchemaPropertyTypeChanged(property: any) {
-    this.EmitChange();
-
-    this.EmitPropertyTypeChanged(property.id);
-  }
-
-  public PropertySchemaChanged(prop: JSONSchema, schema: JSONSchema) {
-    prop.oneOf = [schema];
-
-    this.EmitChange();
+    if (this.Schema) {
+      this.SortedProperties = Object.keys(this.Schema.properties);
+    }
   }
 
   public RemoveProperty(propIndex: string) {
@@ -163,8 +102,24 @@ export class JSONSchemaEditorComponent implements OnInit {
       delete this.Schema.properties[propIndex];
 
       this.EmitChange();
+    }
+  }
 
-      this.EmitPropertyDeleted();
+  public SaveProperty(propName: string, prop: JSONSchema, newPropName: string) {
+    this.SetEditingSettings(prop);
+
+    if (propName !== newPropName) {
+      this.Schema.properties[newPropName] = this.Schema.properties[propName];
+      
+      delete this.Schema.properties[propName];
+
+      var index = this.SortedProperties.indexOf(propName);
+
+      if (index !== -1) {
+        this.SortedProperties[index] = newPropName;
+    }
+
+      this.SortSuccess();
     }
   }
 
@@ -176,12 +131,12 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
   }
 
-  public SortSuccess(event: any) {
+  public SortSuccess() {
     const tmpProps = {};
 
-    for (const key in this.Schema.properties) {
-      tmpProps[this.SortedProperties.indexOf(this.Schema.properties[key].id)] = this.Schema.properties[key];
-    }
+    this.SortedProperties.forEach(key => {
+      tmpProps[key] = this.Schema.properties[key];
+    });
 
     this.Schema.properties = tmpProps;
   }
