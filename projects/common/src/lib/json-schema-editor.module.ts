@@ -1,20 +1,26 @@
+import { JSONSchemaEditorComponent } from './json-schema-editor/json-schema-editor.component';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { JSONSchemaFormControlsComponent } from './json-schema-form-controls/json-schema-form-controls.component';
+import { DndModule } from '@beyerleinf/ngx-dnd';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MaterialModule } from '@lcu/common';
-import { JSONSchemaEditorComponent } from './controls/json-editor/json-schema-editor.component';
+import { FathymSharedModule, MaterialModule } from '@lcu/common';
 
 @NgModule({
-  declarations: [JSONSchemaEditorComponent],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MaterialModule,
-    FlexLayoutModule
+  declarations: [
+    JSONSchemaEditorComponent,
+    JSONSchemaFormControlsComponent,    
   ],
-  exports: [JSONSchemaEditorComponent],
-  entryComponents: [JSONSchemaEditorComponent]
+  imports: [
+    FathymSharedModule,
+    DndModule,
+    FlexLayoutModule,
+    MaterialModule
+  ],
+  exports: [
+    JSONSchemaEditorComponent,
+    JSONSchemaFormControlsComponent,
+  ]
 })
-export class JsonSchemaEditorModule { }
+export class JsonSchemaEditorModule { 
+
+}
