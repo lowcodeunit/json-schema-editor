@@ -28,9 +28,6 @@ export class JSONSchemaEditorComponent implements OnInit {
     this.PivotProperties();
   }
 
-  @Input('schema-lookup-placeholder')
-  public SchemaLookupPlaceholder: string;
-
   @Input('show-validations')
   public ShowValidations: boolean;
 
@@ -39,8 +36,6 @@ export class JSONSchemaEditorComponent implements OnInit {
   // 	Constructors
   constructor() {
     this.Changed = new EventEmitter();
-
-    this.SchemaLookupPlaceholder = 'Schema Type Lookup';
   }
 
   // 	Runtime
@@ -110,14 +105,14 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     if (propName !== newPropName) {
       this.Schema.properties[newPropName] = this.Schema.properties[propName];
-      
+
       delete this.Schema.properties[propName];
 
-      var index = this.SortedProperties.indexOf(propName);
+      const index = this.SortedProperties.indexOf(propName);
 
       if (index !== -1) {
         this.SortedProperties[index] = newPropName;
-    }
+      }
 
       this.SortSuccess();
     }
