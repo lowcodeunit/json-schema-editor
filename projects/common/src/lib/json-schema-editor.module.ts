@@ -1,6 +1,7 @@
 import { JSONSchemaEditorComponent } from './json-schema-editor/json-schema-editor.component';
 import { NgModule } from '@angular/core';
 import { JSONSchemaFormControlsComponent } from './json-schema-form-controls/json-schema-form-controls.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DndModule } from '@beyerleinf/ngx-dnd';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FathymSharedModule, MaterialModule } from '@lcu/common';
@@ -12,6 +13,8 @@ import { FathymSharedModule, MaterialModule } from '@lcu/common';
   ],
   imports: [
     FathymSharedModule,
+    FormsModule,
+    ReactiveFormsModule,
     DndModule,
     FlexLayoutModule,
     MaterialModule

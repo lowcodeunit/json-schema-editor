@@ -5,16 +5,21 @@
 @mixin theme-setup($theme) {
     @include angular-material-theme($theme);
     @include theme-extras($theme);
-    // @include fathym-branding($theme);
+   // @include fathym-branding($theme);
 
     /**
     * setting color for now. need to figure out why it isn't pulling the proper color from the themex - shannon
     */
-    color: mat-contrast(map-get($theme, accent), 500);
-    background: mat-color(map-get($theme, accent));
+   // color: mat-contrast(map-get($theme, accent), 500);
+   // background: mat-color(map-get($theme, accent)); // this breaks cdk-overlay-container
   }
 
-.fathym-contrast-theme {
+.theme {
     $theme: fathym-ivy-theme(false);
     @include theme-setup($theme);
+ }
+
+ .fathym-contrast-theme {
+  $theme: fathym-contrast-theme(false);
+  @include theme-setup($theme);
  }
