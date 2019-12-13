@@ -1,5 +1,9 @@
 export * from './lib/json-schema-editor.module';
 export * from './lib/json-schema-editor/json-schema-editor.component';
 export * from './lib/json-schema-form-controls/json-schema-form-controls.component';
+export * from './lib/controls/edit-drag/edit-drag.component';
+export * from './lib/controls/edit-controls/edit-controls.component';
+export * from './lib/controls/schema-view/schema-view.component';
+export * from './lib/controls/schema-properties/schema-properties.component';
 export * from './lib/services/theme-color-picker.service';
-
+export * from './lib/directives/emit-event.directive';

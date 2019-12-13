@@ -1,88 +1,5 @@
-<!-- <div *ngIf="Schema" fxLayout="row" fxLayoutGap="10px"> -->
-    <!-- <form
-    fxLayout="row"
-    fxLayoutGap="10px"
-    [formGroup]="SchemaForm"
-    novalidate>
-    <mat-card>
-      <mat-card-header>
-          <mat-card-title>Edit Controls</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-          <mat-form-field>
-              <input
-                formControlName="Title"
-                matInput
-                placeholder="Schema Type Lookup"
-              />
-            </mat-form-field>
-      </mat-card-content>
-    </mat-card>
-  
-    <mat-card>
-        <mat-card-header>
-            <div mat-card-avatar class="example-header-image">
-                <mat-icon color="primary">view_headline</mat-icon>
-            </div>
-            <mat-card-title>Modified Schema</mat-card-title>
-            <mat-card-subtitle>Modified</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content fxLayout="column">
-            <mat-form-field appearance="outline" class="modified-control">
-                <mat-label>JSON Schema</mat-label>
-                <textarea
-                    formControlName="ModifiedSchemaControl"
-                    matInput
-                    cdkTextareaAutosize
-                    cdkAutosizeMinRows="25"
-                    cdkAutosizeMaxRows="25">
-                </textarea>
-            </mat-form-field>
-            <div fxLayoutGap="10px">
-                <div fxFlex>
-                    <button mat-raised-button color="primary" [disabled]="!JSONSchemaEditorForm.valid" (click)="Save()">
-                        Save Changes
-                    </button>
-                </div>
-            </div>  
-        </mat-card-content>
-    </mat-card>
-  </form> 
-</div> -->
-  <div *ngIf="Schema" fxLayout="column" fxLayoutGap="10px">
-    <mat-card>
-      <mat-card-header>
-          <mat-card-title>Schema Base</mat-card-title>
-      </mat-card-header>
-      <mat-card-content fxLayout="column" fxLayoutGap="10px">
-          <!-- <mat-form-field>
-              <input
-                matInput
-                placeholder="Schema Draft Version"
-                [(ngModel)]="Schema.$schema"
-                required
-                #schemaTitle
-              />
-            </mat-form-field> -->
-            <mat-select placeholder="Schema Draft Type" [name]="Schema + '$schema'" [(ngModel)]="Schema.$schema">
-              <mat-option *ngFor="let type of DraftTypes" [value]="type.Value">
-                <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-                    <span>{{type.Label}}</span>
-                </div>
-              </mat-option>
-            </mat-select>
-            <mat-form-field>
-              <input matInput placeholder="Schema Title"
-                [(ngModel)]="Schema.title" required #schemaTitle
-              />
-            </mat-form-field>
-            <mat-form-field>
-              <input matInput placeholder="Schema Type"
-                [(ngModel)]="Schema.type" required #schemaType
-              />
-            </mat-form-field>
-      </mat-card-content>
-    </mat-card>
+  <div *ngIf="Schema" fxLayout="column" fxLayoutGap="10px" class="margin-1">
+    <lcu-schema-keywords [schema]="Schema"></lcu-schema-keywords>
 
     <!--Schema Properties-->
     <div fxLayout="row" fxLayoutGap="10px">
@@ -91,18 +8,21 @@
             <mat-card-title>Schema Properties</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-        
       <div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
         <div fxLayout="row" fxLayoutAlign="end center">
           <h3>
-            <button type="button" mat-button button color="warn" (click)="AddProperty()">
-              Add Properties
+            <button 
+              type="button" 
+              mat-button button 
+              color="primary" 
+              matTooltip="Add New Property" 
+              matTooltipPosition="above"
+              (click)="AddProperty()">
+              Add Schema Property
               <mat-icon>add</mat-icon>
             </button>
           </h3>
         </div>
-
-
       <mat-card
         class="no-pointer margin-bottom-2 cursor-default"
         *ngFor="let propName of SortedProperties; let i = index"
@@ -111,141 +31,49 @@
         (dragend)="SortSuccess()">
         <ng-container *ngIf="Schema.properties[propName]; let prop">
           <mat-card-content>
-
             <!--Schema Properties-->
-            <div fxLayout="row">
+            <div fxLayout="row" fxLayoutGap="30px">
               <div fxFlex="auto">
-                <div fxLayout="column">
-                  <h3 [fxShow]="!IsEditingSettings(prop)">{{ propName }}</h3>
-                  <mat-form-field [fxShow]="IsEditingSettings(prop)">
-                  <input
-                    type="text"
-                    matInput
-                    [name]="propName + 'PropName'"
-                    [value]="propName"
-                    placeholder="Property Name"
-                    required
-                    #propNameFld/>
-                  </mat-form-field>
-                  
-                  <mat-form-field *ngIf="prop.description" [fxShow]="IsEditingSettings(prop)">
-                    <input
-                      type="text"
-                      matInput
-                      [name]="propName + 'PropName'"
-                      [(ngModel)]="prop.description"
-                      placeholder="Property Name"
-                      required
-                      #propDescriptionFld/>
-                  </mat-form-field>
-
-                  <mat-form-field *ngIf="prop.minimum > -1" [fxShow]="IsEditingSettings(prop)">
-                      <input
-                        type="text"
-                        matInput
-                        [name]="propName + 'PropName'"
-                        [(ngModel)]="prop.minimum"
-                        placeholder="Property Minimum"
-                        required
-                        #propMinimumFld/>
-                    </mat-form-field>
-
-                  <div [fxShow]="IsEditingSettings(prop)">
-                      <div>
-                        <mat-form-field>
-                          <mat-select
-                            placeholder="Property Type"
-                            [name]="propName + 'PropType'"
-                            [(ngModel)]="prop.type">
-                            <mat-option *ngFor="let type of DataTypes" [value]="type.Value">
-                              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-                                  <span>{{type.Label}}</span>
-                              </div>
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-        
-                        <!--<mat-checkbox [(ngModel)]="prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropId'">
-                        Is Identifier
-                      </mat-checkbox>-->
-                      </div>
-        
-                      <div *ngIf="ShowValidations">
-                        <h4>Validations</h4>
-        
-                        <!--<mat-checkbox [(ngModel)]="prop.Required" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropRequired'">
-                        Required
-                      </mat-checkbox>-->
-                      </div>
-        
-                      <div *ngIf="prop.type == 'object'">
-                        <h4>Object Schema</h4>
-        
-                        <lcu-json-schema-editor
-                          [(schema)]="prop.oneOf[0]"
-                          [show-validations]="ShowValidations"
-                        >
-                        </lcu-json-schema-editor>
-                      </div>
-                    </div>
-                </div>
+                  <lcu-schema-properties 
+                    [is-editing]="IsEditingSettings(prop)"
+                    [prop]="prop"
+                    [prop-name]="propName"
+                    (prop-name-changed)="PropertyNameChanged($event)">
+                </lcu-schema-properties>
               </div>
             <!--^^^^^^^^^^^^^^^^^-->
             <!--Schema Properties-->
 
-            <!--Edit Controls-->
-              <ng-container *ngIf="!IsEditingSettings(prop)">
-                <div dnd-sortable-handle fxFlex="100px">
-                  <button type="button" mat-button color="warn">
-                    <mat-icon>reorder</mat-icon>
-                  </button>
-                </div>
+            <!--Edit and Drag-->
+            <div fxLayout="row" fxLayoutAlign="end center">
+              <lcu-edit-drag 
+                [prop]="prop" 
+                [is-editing]="!IsEditingSettings(prop)"
+                (editing-settings)="SetEditingSettings(prop)">
+              </lcu-edit-drag>
+            </div>
+            <!--^^^^^^^^^^^^^^^^^-->
+            <!--Edit and Drag--->
 
-                <div (click)="SetEditingSettings(prop)" fxFlex="100px">
-                  <button type="button" mat-button color="primary">
-                    <mat-icon>mode_edit</mat-icon>
-                  </button>
-                </div>
-
-                <ng-content select="no-edit-actions"></ng-content>
-              </ng-container>
-
-              <ng-container *ngIf="IsEditingSettings(prop)">
-                <div *ngIf="IsEditingSettings(prop)" (click)="RemoveProperty(i)" fxFlex="100px">
-                  <button type="button" mat-button color="warn">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-
-                <div (click)="SaveProperty(propName, prop, propNameFld.value)" fxFlex="100px">
-                  <button type="button" mat-button color="primary">
-                    <mat-icon>save</mat-icon>
-                  </button>
-                </div>
-
-                <ng-content select="edit-actions"></ng-content>
-              </ng-container>
-              <!--^^^^^^^^^^^^^-->
               <!--Edit Controls-->
+              <lcu-edit-controls
+                [is-editing]="IsEditingSettings(prop)"
+                [prop]="prop"
+                [prop-name]="propName"
+                (add-property)="AddNestedProperty(i, propName)"
+                (close-edit-control)="CloseEditControl()"
+                (remove-property)="RemoveProperty(i)"
+                (save-property)="SaveProperty(propName, prop, PropNameFldValue)">
+              </lcu-edit-controls>
             </div>
           </mat-card-content>
         </ng-container>
       </mat-card>
-
-      <p *ngIf="!Schema.properties || SortedProperties?.length == 0">Add a New Property to Get Started</p>
+      <p *ngIf="!Schema.properties || SortedProperties?.length === 0">Add a New Property to Get Started</p>
     </div>
   </mat-card-content>
   </mat-card>
 
-<!--Schema View-->
-  <mat-card>
-    <mat-card-header>
-        <mat-card-title>Schema View</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <pre>{{Schema | json}}</pre>
-    </mat-card-content>
-  </mat-card>
-  <!--^^^^^^^^^^^-->
   <!--Schema View-->
+  <lcu-schema-view fxFlex [schema]="Schema"></lcu-schema-view>
 </div>

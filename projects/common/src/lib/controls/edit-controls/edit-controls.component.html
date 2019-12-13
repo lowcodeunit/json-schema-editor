@@ -1,0 +1,48 @@
+<div fxLayout="row">
+    <ng-container *ngIf="IsEditing">
+      <div *ngIf="IsEditing" (click)="Remove()">
+        <button 
+          type="button" 
+          mat-button 
+          color="warn"
+          matTooltip="Delete Property" 
+          matTooltipPosition="above">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+      <div *ngIf="IsEditing" (click)="Add()">
+          <button 
+            type="button" 
+            mat-button 
+            color="accent"
+            matTooltip="Add Property" 
+            matTooltipPosition="above">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+
+      <div (click)="Save()">
+        <button 
+          type="button" 
+          mat-button 
+          color="accent"
+          matTooltip="Save Changes" 
+          matTooltipPosition="above">
+          <mat-icon>save</mat-icon>
+        </button>
+      </div>
+
+      <div (click)="Close()">
+        <button 
+          type="button" 
+          mat-button 
+          color="accent"
+          matTooltip="Cancel Edit" 
+          matTooltipPosition="above">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <ng-content select="edit-actions"></ng-content>
+    </ng-container>
+  </div>

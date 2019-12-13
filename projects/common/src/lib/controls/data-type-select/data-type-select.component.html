@@ -1,0 +1,13 @@
+<mat-form-field>
+  <mat-select
+    placeholder="Property Type"
+    [name]="PropName + 'PropType'"
+    [(ngModel)]="Prop.type"
+    selectionChange="OnChange('sd')">
+    <mat-option *ngFor="let type of DataTypes" [value]="type.Value">
+      <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+          <span>{{type.Label}}</span>
+      </div>
+    </mat-option>
+  </mat-select>
+</mat-form-field>

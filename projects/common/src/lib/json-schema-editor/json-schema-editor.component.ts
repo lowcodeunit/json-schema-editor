@@ -1,8 +1,12 @@
+import { ModifiedFormControlModel } from './../models/modified-form-control.model';
+import { SchemaPropertyModel } from './../models/schema-property.model';
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { JSONSchema } from '@lcu/common';
-import { FormBuilder, FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap, map, pairwise } from 'rxjs/operators';
+import { JSONSchema, JSONFlattenUnflatten, IsDataTypeUtil } from '@lcu/common';
+import { FormBuilder, FormControl, FormGroup, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { SelectModel } from '../models/select.model';
+
 
 @Component({
   selector: 'lcu-json-schema-editor',
@@ -32,6 +36,7 @@ export class JSONSchemaEditorComponent implements OnInit {
 
       this.schema = schema;
       this.updateSchemaControl();
+      this.iterateSchema(schema);
       this.PivotProperties();
     }
 
@@ -47,28 +52,42 @@ export class JSONSchemaEditorComponent implements OnInit {
       }
     }
 
-    /**
-     * Array of datatype select options
-     */
-    public DataTypes: Array<SelectModel>;
+    private _propNameFldValue: string;
+    get PropNameFldValue(): string {
+      return this._propNameFldValue;
+    }
 
-    /**
-     * Array of schema draft types
-     */
-    public DraftTypes: Array<SelectModel>;
+    set PropNameFldValue(val: string) {
+      this._propNameFldValue = val;
+    }
 
     /**
    * Form
    */
     public SchemaForm: FormGroup;
 
+    public SchemaKeywordGroup: FormGroup;
+
+    public get SchemaPropertyControls(): FormArray {
+      return this.SchemaForm.get('SchemaPropertyControls') as FormArray;
+    }
+
+    public SchemaPropertyList: Array<SchemaPropertyModel>;
+
     /**
      * Schema properties
      */
-    public SortedProperties: string[];
+    // public SortedProperties: Array<SchemaPropertyModel>;
+    public SortedProperties: Array<string>;
+
+    protected changedFormControl: ModifiedFormControlModel;
+
+    // protected propertyKeys: Array<SchemaPropertyModel>;
+    protected propertyKeys: Array<string>;
+
 
     // 	Constructors
-    constructor() {
+    constructor(protected formBuilder: FormBuilder) {
       this.Changed = new EventEmitter();
     }
 
@@ -76,7 +95,7 @@ export class JSONSchemaEditorComponent implements OnInit {
     public ngOnInit() {
 
       this.setupForm();
-
+      
       // if (!this.Schema) {
         // this.Schema = { properties: {} } as JSONSchema;
         // this.EmitChange();
@@ -90,9 +109,17 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
 
     // 	API Methods
+
+    public PropertyNameChanged(val: string): void {
+      this.PropNameFldValue = val;
+    }
+
+    /**
+     * Add a new top level property
+     */
     public AddProperty() {
       const prop = {
-        oneOf: [{} as JSONSchema]
+       // oneOf: [{} as JSONSchema]
       } as JSONSchema;
 
       let index = 0;
@@ -104,8 +131,27 @@ export class JSONSchemaEditorComponent implements OnInit {
       this.Schema.properties[index.toString()] = prop;
 
       this.SetEditingSettings(prop);
-      
-      this.EmitChange();
+
+      this.Schema = this.Schema;
+     // this.EmitChange();
+    }
+
+    /**
+     * Add a new nested property
+     *
+     * @param idx parent property index
+     *
+     * @param parentPropertyName parent property name
+     */
+    public AddNestedProperty(idx: number, parentPropertyName: string): void {
+      const prop = {} as JSONSchema;
+      const parentProperty: any = this.Schema.properties[parentPropertyName];
+      const parentKeys: Array<string> = Object.keys(this.Schema.properties[parentPropertyName]);
+      const index: number = parentKeys.length;
+
+      this.Schema.properties[parentPropertyName]['Child Property ' + index.toString()] = prop;
+
+      this.SetEditingSettings(prop);
     }
 
     public EmitChange() {
@@ -119,20 +165,27 @@ export class JSONSchemaEditorComponent implements OnInit {
     public PivotProperties() {
       if (this.Schema) {
         this.SortedProperties = Object.keys(this.Schema.properties);
+        // this.SortedProperties = this.propertyKeys;
+        this.createPropertyControls();
       }
     }
 
     public RemoveProperty(propIndex: string) {
       let msg = 'Are you sure you want to delete this property?';
+      const propName: string = Object.keys(this.schema.properties)[propIndex];
+      const property: any = this.schema.properties[Object.keys(this.schema.properties)[propIndex]];
+      // if (this.Schema.properties[propIndex].title) {
+      //   msg = `Are you sure you want to delete property '${this.Schema.properties[propIndex].title}'?`;
+      // }
 
-      if (this.Schema.properties[propIndex].title) {
-        msg = `Are you sure you want to delete property '${this.Schema.properties[propIndex].title}'?`;
+      if (this.Schema.properties[propName]) {
+        msg = `Are you sure you want to delete property '${propName}'?`;
       }
 
       if (confirm(msg)) {
-        delete this.Schema.properties[propIndex];
-
-        this.EmitChange();
+        delete this.Schema.properties[propName];
+        this.Schema = this.Schema;
+        // this.EmitChange();
       }
     }
 
@@ -154,9 +207,13 @@ export class JSONSchemaEditorComponent implements OnInit {
       }
     }
 
+    public CloseEditControl(): void {
+      this.CurrentlyEditingSettingsFor = null;
+    }
+
     public SetEditingSettings(prop: JSONSchema) {
       if (this.IsEditingSettings(prop)) {
-        this.CurrentlyEditingSettingsFor = null;
+        this.CloseEditControl();
       } else {
         this.CurrentlyEditingSettingsFor = prop;
       }
@@ -178,18 +235,100 @@ export class JSONSchemaEditorComponent implements OnInit {
       this.EmitChange();
     }
 
+    public GetControlName(c: AbstractControl): string | null {
+      const formGroup = c.parent.controls;
+      // let name: string = '';
+      // Object.keys(formGroup).forEach( (itm, idx) => {
+      //   name = formGroup[idx].value.PropertyName;
+      // });
+      const ctrlName = Object.keys(formGroup).find((name) => c === formGroup[name]) || null;
+     return ctrlName;
+    }
+
     // 	Helpers
     /**
    * Setup the form
    */
   protected setupForm(): void {
-    this.SchemaForm = new FormGroup({
+
+    this.SchemaForm = this.formBuilder.group({
       ModifiedSchemaControl: new FormControl({value: '', disabled: true}),
-      Title: new FormControl('', [Validators.required])
+      Title: new FormControl('', [Validators.required]),
+      SchemaPropertyControls: this.buildPropertyControls()
     });
 
-    this.setDataTypes();
-    this.setDraftTypes();
+    this.onFormChanges();
+  }
+
+  // public NameChange(val: any): void {
+  //   console.log('name change', val);
+  // }
+
+  // public InputChanged(ctrl: any): void {
+  //   console.log('input change', ctrl);
+  // }
+
+  /**
+   * When control has focus, get control values
+   *
+   * @param ctrl form control that has focus
+   *
+   * @param currVal control's current value
+   *
+   * @param propertyName control's property name
+   */
+  public InputHasFocus(ctrl: FormControl, propertyName: string, currVal: string, prevVal: SchemaPropertyModel, index: string): void {
+    console.log('input has focus', ctrl);
+    this.changedFormControl = new ModifiedFormControlModel(ctrl, currVal, propertyName, prevVal, Number(index));
+  }
+
+  // public TextChanged(ctrl: any): void {
+  //   console.log('text changed', ctrl);
+  // }
+
+  protected onFormChanges(): void {
+    // this.SchemaForm.valueChanges.pipe(pairwise())
+    // .subscribe(([prev, next]: [any, any]) => {
+    //   console.log('PREV1', prev);
+    //   console.log('NEXT1', next);
+    // });
+    // this.SchemaForm
+    // .valueChanges
+    // .pipe(
+    //   debounceTime(500),
+    //   distinctUntilChanged((prev, curr) => {
+    //   // console.log(prev, curr);
+    //     return prev === curr;
+    //   }),
+    //   map(res => console.log('mapped form changed res', res))
+    // )
+    this.SchemaForm
+    .valueChanges
+      .subscribe(val => {
+        console.log('value changed', val);
+        console.log(this.changedFormControl);
+        this.updateControlValue(val);
+      });
+  }
+
+  protected updateControlValue(changedValue: any): void {
+    if (!this.changedFormControl) {
+      return;
+    }
+
+    this.changedFormControl.PreviousValue.Value = changedValue.SchemaPropertyControls[this.changedFormControl.Index];
+    this.changedFormControl.Control.setValue(this.changedFormControl.PreviousValue, {onlySelf: true, emitEvent: false});
+  }
+
+  protected getSelectedCtrl(): any {
+    if (!this.SchemaPropertyControls.controls || this.SchemaPropertyControls.controls.length === 0) {
+      return;
+    }
+    return this.SchemaForm.value
+    .SchemaPropertyControls.filter(x => x)
+                           .map((selected, i) => this.SchemaPropertyList.map( prop => {
+                             return { PropertyName: prop.PropertyName, Value: prop.Value };
+                            } ));
   }
 
   /**
@@ -201,31 +340,107 @@ export class JSONSchemaEditorComponent implements OnInit {
     this.ModifiedSchemaControl.setValue(JSON.stringify(this.schema, null, 5)); // null, 5 keeps JSON format
   }
 
-  /**
-   * Set datatype select options
-   */
-  protected setDataTypes(): void {
-    this.DataTypes = [
-      { Label: 'No Type', Value: '' },
-      { Label: 'Null', Value: 'null' },
-      { Label: 'Boolean', Value: 'boolean' },
-      { Label: 'Object', Value: 'object' },
-      { Label: 'Array', Value: 'array' },
-      { Label: 'Number', Value: 'number' },
-      { Label: 'String', Value: 'string' },
-      { Label: 'Integer', Value: 'integer' },
-    ];
+  protected createPropertyControls(): void {
+    // this.SchemaPropertyList = [];
+    // console.log('this.SortedProperties', this.SortedProperties);
+    // this.SortedProperties.forEach(propName => {
+    //   console.log('propName', this.Schema.properties[propName]);
+    //   Object.entries(this.Schema.properties[propName]).forEach(entry => {
+    //     let key: string = entry[0];
+    //     let value: any = entry[1];
+    //     let newCtrl = new SchemaPropertyModel({
+    //                                             PropertyName : propName,
+    //                                             Type: (key === 'type') ? key : null,
+    //                                             Description: (key === 'description') ? key : null,
+    //                                             Minimum: (key === 'minimum') ? key : null,
+    //                                             Placeholder: 'Schema Type Lookup',
+    //                                             Value: value });
+
+    //     this.SchemaPropertyList.push(newCtrl);
+    //   });
+    // });
+    // this.setupForm();
+  }
+
+  protected buildPropertyControls(): FormArray {
+
+    if (this.SortedProperties && this.SortedProperties.length > 0) {
+      const arr = this.SchemaPropertyList.map(propCtrl => {
+        return this.formBuilder.control(propCtrl);
+      });
+      // this.SchemaPropertyControls.setValue(arr);
+      return this.formBuilder.array(arr);
+    }
   }
 
   /**
-   * Set schema draft types
-   */
-  protected setDraftTypes(): void {
-    this.DraftTypes = [
-      { Label: 'http://json-schema.org/draft-2019-09/schema#', Value: 'http://json-schema.org/draft-2019-09/schema#' },
-      { Label: 'http://json-schema.org/draft-07/schema#', Value: 'http://json-schema.org/draft-07/schema#' },
-      { Label: 'http://json-schema.org/draft-07/schema#', Value: 'http://json-schema.org/draft-06/schema#' },
-      { Label: 'http://json-schema.org/draft-07/schema#', Value: 'http://json-schema.org/draft-04/schema#' }
-    ];
+  * Iterate through JSON Schema and build dynamic controls
+  *
+  * Set control properties
+  *
+  * @param schema JSON Schema
+  */
+  protected iterateSchema(schema: JSONSchema): void {
+
+    const flatMap: Map<string, string> = JSONFlattenUnflatten.FlattenMap(schema.properties);
+    const flatMapArray: Array<any> = [];
+    const propertyKeys: Array<string> = [];
+    this.propertyKeys = [];
+
+    for (const kv of flatMap) {
+      flatMapArray.push(kv);
+      this.getKeys(schema.properties, kv[0], propertyKeys);
+    }
+   // this.getKeys(schema.properties, '', propertyKeys);
+  }
+
+  protected getKeys(obj: object, propertyPath: string, propertyKeys: Array<string>): string {
+
+    const topLevelProperties: Array<string> = Object.keys(obj);
+
+  //   if (topLevelProperties.length > 0) {
+  //     return topLevelProperties.reduce( (acc, curr, idx, arr) => {
+
+  //       if (Object.keys(obj[curr])) {
+  //         console.log('first level', curr);
+  //         const newProp: SchemaPropertyModel = new SchemaPropertyModel(
+  //           {
+  //             Description: obj[curr].description,
+  //             PropertyName: curr,
+  //             IsChild: false,
+  //             Type: obj[curr].type,
+  //             Value: curr
+  //           });
+  //         this.propertyKeys.push(newProp);
+  //       }
+
+  //       for (const itm of Object.keys(obj[curr])) {
+  //         if (IsDataTypeUtil.IsObject(obj[curr][itm])) {
+  //           console.log('itm', itm);
+  //           const newProp: SchemaPropertyModel = new SchemaPropertyModel(
+  //             {
+  //               Description: obj[curr][itm].description,
+  //               IsChild: true,
+  //               PropertyName: itm,
+  //               PropertyChildName: itm,
+  //               Type: obj[curr][itm].type,
+  //               Value: itm
+  //             });
+  //           this.propertyKeys.push(newProp);
+  //         }
+  //       }
+  //         return acc ? acc[curr] : null; // if acc, then start additional iterations with acc[curr]
+  //     }, obj); // first item to start the loop
+  //  }
+
+    if (propertyPath.split('.').length > 1) {
+      return propertyPath.split('.').reduce( (acc, curr, idx, arr) => {
+          if (IsDataTypeUtil.IsObject(obj[curr]) || acc && IsDataTypeUtil.IsObject(acc[curr])) {
+            console.log('curr', curr);
+            this.propertyKeys.push(curr);
+          }
+          return acc ? acc[curr] : null; // if acc, then start additional iterations with acc[curr]
+      }, obj); // first item to start the loop
+    }
   }
 }

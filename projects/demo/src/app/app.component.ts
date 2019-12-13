@@ -1,6 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { JSONSchema, ThemeColorPickerService } from '@lcu/common';
+import { Component, OnInit } from '@angular/core';
+import { JSONSchema } from '@lcu/common';
 
 @Component({
   selector: 'lcu-root',
@@ -8,13 +7,15 @@ import { JSONSchema, ThemeColorPickerService } from '@lcu/common';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  public JSONSchema: JSONSchema;
-  public ThemeClass: BehaviorSubject<string>;
 
-  constructor(protected themeColorPickerService: ThemeColorPickerService) {}
+  /**
+   * Schema
+   */
+  public JSONSchema: JSONSchema;
+
+  constructor() {}
 
   public ngOnInit(): void {
-    this.resetTheme();
     setTimeout(() => {
       this.JSONSchema = this.getSchema();
     }, 1000);
@@ -29,7 +30,11 @@ export class AppComponent implements OnInit {
       properties: {
         firstName: {
           type: 'string',
-          description: 'The person\'s first name.'
+          description: 'The person\'s first name.',
+          userName: {
+            type: 'string',
+            description: 'The person\'s user name.',
+          }
         },
         middleName: {
           type: 'string',
@@ -49,12 +54,4 @@ export class AppComponent implements OnInit {
 
     return schema;
   }
-
-  /**
-   * Set default theme
-   */
-  protected resetTheme(): void {
-   // this.themeColorPickerService.SetColorClass('theme');
-   this.ThemeClass = this.themeColorPickerService.GetColorClass();
-   }
 }

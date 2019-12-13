@@ -1,0 +1,32 @@
+<mat-card>
+  <mat-card-header>
+      <mat-card-title>Schema Keywords</mat-card-title>
+  </mat-card-header>
+  <mat-card-content fxLayout="column" fxLayoutGap="10px">
+    <mat-form-field>
+      <input matInput placeholder="Schema Id" [(ngModel)]="Schema.$id" required #schemaID/>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Schema Title" [(ngModel)]="Schema.title" required #schemaID/>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Schema Draft Type" [name]="Schema + '$schema'" [(ngModel)]="Schema.$schema">
+        <mat-option *ngFor="let type of DraftTypes" [value]="type.Value">
+          <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+              <span>{{type.Label}}</span>
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Schema Title"
+        [(ngModel)]="Schema.title" required #schemaTitle
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Schema Type"
+        [(ngModel)]="Schema.type" required #schemaType
+      />
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>

@@ -3,23 +3,27 @@
 @import '../../../node_modules/@lcu/common/assets/theming/fathym_themes';
 
 @mixin theme-setup($theme) {
-    @include angular-material-theme($theme);
-    @include theme-extras($theme);
-   // @include fathym-branding($theme);
+  // @include primary-logo(thinky-logo, $theme, 1);
+  @include angular-material-theme($theme);
+  // @include fathym-branding($theme);
+  @include theme-extras($theme); 
 
-    /**
-    * setting color for now. need to figure out why it isn't pulling the proper color from the themex - shannon
-    */
-   // color: mat-contrast(map-get($theme, accent), 500);
-   // background: mat-color(map-get($theme, accent)); // this breaks cdk-overlay-container
+  .mat-card {
+  //  background-color: mat-color(map-get($theme, accent), 300);
   }
 
-.theme {
-    $theme: fathym-ivy-theme(false);
-    @include theme-setup($theme);
- }
+  body {
+    background-color: mat-color(map-get($theme, primary), 300);
+  }
+}
 
- .fathym-contrast-theme {
-  $theme: fathym-contrast-theme(false);
-  @include theme-setup($theme);
- }
+// @mixin primary-logo($logo, $theme, $opacity) {
+//   .primary-logo {
+//     // @extend .header-background;
+//     height: 50px !important;
+//     width: 50px !important;
+//     background-image: fathym-logo($logo, mat-color(map-get($theme, accent)), $opacity) !important;
+//   }
+// }
+
+@include theme-setup(fathym-sea-green-theme(true));
