@@ -21,6 +21,7 @@
           <!-- </mat-card-content> -->
       </mat-card-header>
     </mat-card>
+    
     <lcu-schema-keywords [schema]="Schema"></lcu-schema-keywords>
 
     <!--Schema Properties-->
@@ -87,6 +88,14 @@
                 (remove-property)="RemoveProperty(i)"
                 (save-property)="SaveProperty(propName, prop, PropNameFldValue)">
               </lcu-edit-controls>
+            </div>
+            <div *ngIf="prop.type === 'object'">
+              <!-- <h4>Object Schema</h4>
+              <pre>{{prop | json}}</pre> -->
+              <!-- <lcu-json-schema-editor
+                [(schema)]="prop.oneOf[0]"
+                [show-validations]="ShowValidations">
+              </lcu-json-schema-editor> -->
             </div>
           </mat-card-content>
         </ng-container>

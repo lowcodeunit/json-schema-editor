@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 })
 
 export class JSONSchemaEditorComponent implements OnInit {
+
     // 	Fields
     protected schema: JSONSchema;
 
@@ -159,7 +160,7 @@ export class JSONSchemaEditorComponent implements OnInit {
      */
     public AddProperty() {
       const prop = {
-       // oneOf: [{} as JSONSchema]
+      // oneOf: [{} as JSONSchema]
       } as JSONSchema;
 
       let index = 0;

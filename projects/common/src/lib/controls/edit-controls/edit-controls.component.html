@@ -10,7 +10,7 @@
           <mat-icon>delete</mat-icon>
         </button>
       </div>
-      <div *ngIf="IsEditing" (click)="Add()">
+      <div *ngIf="IsEditing && Prop.type === 'object'" (click)="Add()">
           <button 
             type="button" 
             mat-button 
