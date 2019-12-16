@@ -1,21 +1,55 @@
+import { JSONSchemaEditorComponent } from './json-schema-editor/json-schema-editor.component';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { JSONSchemaFormControlsComponent } from './json-schema-form-controls/json-schema-form-controls.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule } from '@lcu/common';
-import { JsonEditorComponent } from './controls/json-editor/json-editor.component';
-import { TreeLoadmoreExampleComponent } from './controls/tree-loadmore-example/tree-loadmore-example.component';
-import { DynamicReactiveFormComponent } from './controls/dynamic-reactive-form/dynamic-reactive-form.component';
-import { DynamicReactiveFormDosComponent } from './controls/dynamic-reactive-form-dos/dynamic-reactive-form-dos.component';
+import { DndModule } from '@beyerleinf/ngx-dnd';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { FathymSharedModule, MaterialModule } from '@lcu/common';
+import { EmitEventDirective } from './directives/emit-event.directive';
+import { EditDragComponent } from './controls/edit-drag/edit-drag.component';
+import { EditControlsComponent } from './controls/edit-controls/edit-controls.component';
+import { SchemaViewComponent } from './controls/schema-view/schema-view.component';
+import { SchemaPropertiesComponent } from './controls/schema-properties/schema-properties.component';
+import { SchemaKeywordsComponent } from './controls/schema-keywords/schema-keywords.component';
+import { DataTypeSelectComponent } from './controls/data-type-select/data-type-select.component';
+import { SchemaPropertyControlComponent } from './controls/schema-property-control/schema-property-control.component';
 
 @NgModule({
-  declarations: [JsonEditorComponent, TreeLoadmoreExampleComponent, DynamicReactiveFormComponent, DynamicReactiveFormDosComponent],
+  declarations: [
+    JSONSchemaEditorComponent,
+    JSONSchemaFormControlsComponent,
+    EmitEventDirective,
+    EditDragComponent,
+    EditControlsComponent,
+    SchemaViewComponent,
+    SchemaPropertiesComponent,
+    SchemaKeywordsComponent,
+    DataTypeSelectComponent,
+    SchemaPropertyControlComponent
+  ],
   imports: [
-    CommonModule,
+    FathymSharedModule,
     FormsModule,
     ReactiveFormsModule,
+    DndModule,
+    FlexLayoutModule,
     MaterialModule
   ],
-  exports: [JsonEditorComponent, TreeLoadmoreExampleComponent, DynamicReactiveFormComponent, DynamicReactiveFormDosComponent],
-  entryComponents: [JsonEditorComponent, TreeLoadmoreExampleComponent, DynamicReactiveFormComponent, DynamicReactiveFormDosComponent]
+  exports: [
+    JSONSchemaEditorComponent,
+    JSONSchemaFormControlsComponent,
+    EmitEventDirective,
+    EditDragComponent,
+    EditControlsComponent,
+    SchemaViewComponent,
+    SchemaPropertiesComponent,
+    SchemaKeywordsComponent,
+    DataTypeSelectComponent,
+    SchemaPropertyControlComponent
+  ],
+  providers: [],
+  entryComponents: [EditDragComponent, EditControlsComponent, SchemaViewComponent, SchemaPropertiesComponent, SchemaKeywordsComponent, DataTypeSelectComponent, SchemaPropertyControlComponent]
 })
-export class JsonSchemaEditorModule { }
+export class JsonSchemaEditorModule { 
+
+}

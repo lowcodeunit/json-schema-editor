@@ -1,0 +1,23 @@
+<div *ngIf="IsEditing" fxLayout="row">
+  <div dnd-sortable-handle>
+    <button 
+      type="button" 
+      mat-button color="accent"
+      matTooltip="Drag to Reorder Property" 
+      matTooltipPosition="above">
+      <mat-icon>reorder</mat-icon>
+    </button>
+  </div>
+
+  <div (click)="SetEditingSettings(Prop)">
+    <button 
+      type="button" 
+      mat-button 
+      color="accent"
+      matTooltip="Edit Property" 
+      matTooltipPosition="above">
+      <mat-icon>mode_edit</mat-icon>
+    </button>
+  </div>
+  <ng-content select="no-edit-actions"></ng-content>
+</div>

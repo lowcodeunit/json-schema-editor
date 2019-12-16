@@ -1,80 +1,57 @@
-import { ColorPickerService } from './../../../common/src/lib/services/color-picker.service';
-import { Component, OnInit, Input } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Component, OnInit } from '@angular/core';
 import { JSONSchema } from '@lcu/common';
 
 @Component({
   selector: 'lcu-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: ['./app.component.scss']
 })
-
 export class AppComponent implements OnInit {
 
+  /**
+   * Schema
+   */
   public JSONSchema: JSONSchema;
-  public ThemeClass: BehaviorSubject<string>;
 
-  constructor(protected colorPickerService: ColorPickerService) {
-
-  }
+  constructor() {}
 
   public ngOnInit(): void {
-    this.resetTheme();
-
     setTimeout(() => {
       this.JSONSchema = this.getSchema();
-    }, 2000);
+    }, 1000);
   }
 
-  /**
-   * Set default theme
-   */
-  protected resetTheme(): void {
-    // this.changeTheme('contrast-theme');
-    this.ThemeClass = this.colorPickerService.GetColorClass();
-   }
-
   protected getSchema(): JSONSchema {
-
-    const schema: JSONSchema = new JSONSchema();
-
-    schema.default =
-   {
-    $schema: 'http://json-schema.org/draft-07/schema#',
-    title: 'JSON Schema Test',
-    definitions: {
-      address: {
-        type: 'object',
-        properties: {
-          street_address: { type: 'string' },
-          city:           { type: 'string' },
-          state:          { type: 'string' }
+    const schema: JSONSchema = {
+      $id: 'https://example.com/person.schema.json',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      title: 'Person',
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          description: 'The person\'s first name.',
+          userName: {
+            type: 'string',
+            description: 'The person\'s user name.',
+          }
         },
-        required: ['street_address', 'city', 'state']
+        middleName: {
+          type: 'string',
+          description: 'The person\'s middle name.'
+        },
+        lastName: {
+          type: 'string',
+          description: 'The person\'s last name.'
+        },
+        age: {
+          description: 'Age in years which must be equal to or greater than zero.',
+          type: 'integer',
+          minimum: 0
+        }
       }
-    },
-    type: 'object',
-    properties: {
-      billing_address: { $ref: '#/definitions/address' },
-      shipping_address: { $ref: '#/definitions/address' }
-    }
-  };
+    } as JSONSchema;
 
-  //   schema.default =
-  //  {
-  //   $schema: 'http://json-schema.org/draft-07/schema#',
-  //   title: 'JSON Schema Test',
-
-  //   definitions: {
-  //     address: {
-  //       properties: {
-  //         street_address: { type: 'string' },
-  //         city:           { type: 'string' },
-  //         state:          { type: 'string' }
-  //       }
-  //     }
-  //   }
-  // };
     return schema;
   }
 }
