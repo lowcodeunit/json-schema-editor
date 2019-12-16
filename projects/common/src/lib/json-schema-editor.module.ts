@@ -12,6 +12,7 @@ import { SchemaViewComponent } from './controls/schema-view/schema-view.componen
 import { SchemaPropertiesComponent } from './controls/schema-properties/schema-properties.component';
 import { SchemaKeywordsComponent } from './controls/schema-keywords/schema-keywords.component';
 import { DataTypeSelectComponent } from './controls/data-type-select/data-type-select.component';
+import { SchemaPropertyControlComponent } from './controls/schema-property-control/schema-property-control.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { DataTypeSelectComponent } from './controls/data-type-select/data-type-s
     SchemaViewComponent,
     SchemaPropertiesComponent,
     SchemaKeywordsComponent,
-    DataTypeSelectComponent
+    DataTypeSelectComponent,
+    SchemaPropertyControlComponent
   ],
   imports: [
     FathymSharedModule,
@@ -42,9 +44,11 @@ import { DataTypeSelectComponent } from './controls/data-type-select/data-type-s
     SchemaViewComponent,
     SchemaPropertiesComponent,
     SchemaKeywordsComponent,
-    DataTypeSelectComponent
+    DataTypeSelectComponent,
+    SchemaPropertyControlComponent
   ],
-  entryComponents: [EditDragComponent, EditControlsComponent, SchemaViewComponent, SchemaPropertiesComponent, SchemaKeywordsComponent, DataTypeSelectComponent]
+  providers: [],
+  entryComponents: [EditDragComponent, EditControlsComponent, SchemaViewComponent, SchemaPropertiesComponent, SchemaKeywordsComponent, DataTypeSelectComponent, SchemaPropertyControlComponent]
 })
 export class JsonSchemaEditorModule { 
 

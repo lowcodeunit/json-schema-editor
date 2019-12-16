@@ -1,3 +1,5 @@
+import { Subscription } from 'rxjs';
+import { SchemaEventsService } from './../../services/schema-events.service';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
@@ -49,29 +51,32 @@ export class EditControlsComponent implements OnInit {
   @Output('save-property')
   public SaveProperty: EventEmitter<any>;
 
-  constructor() {
+  constructor(protected schemaEventService: SchemaEventsService) {
     this.AddProperty = new EventEmitter();
     this.CloseEditControl = new EventEmitter();
     this.RemoveProperty = new EventEmitter();
     this.SaveProperty = new EventEmitter();
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public Add(): void {
     this.AddProperty.emit();
+    // this.schemaEventService.AddProperty();
   }
 
   public Close(): void {
     this.CloseEditControl.emit();
+    // this.schemaEventService.CloseEditControl();
   }
 
   public Remove(): void {
     this.RemoveProperty.emit();
+    // this.schemaEventService.RemoveProperty();
   }
 
   public Save(): void {
     this.SaveProperty.emit();
+    // this.schemaEventService.SaveProperty();
   }
 }

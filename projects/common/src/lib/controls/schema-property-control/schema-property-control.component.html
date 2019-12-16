@@ -1,0 +1,41 @@
+<mat-card
+        class="no-pointer margin-bottom-2 cursor-default"
+        *ngFor="let propName of SortedProperties; let i = index"
+        dnd-sortable
+        [sortableIndex]="i"
+        (dragend)="SortSuccess()">
+        <ng-container *ngIf="Schema.properties[propName]; let prop">
+          <mat-card-content>
+           
+            <div fxLayout="row" fxLayoutGap="30px">
+              <div fxFlex="auto">
+                  <lcu-schema-properties 
+                    [is-editing]="IsEditing"
+                    [prop]="prop"
+                    [prop-name]="propName"
+                    (prop-name-changed)="PropertyNameChanged($event)">
+                    <pre>{{Schema.properties[propName]['Child'] | json}}</pre>
+                </lcu-schema-properties>
+              </div>
+     
+            <div fxLayout="row" fxLayoutAlign="end center">
+              <lcu-edit-drag 
+                [prop]="prop" 
+                [is-editing]="!IsEditing"
+                (editing-settings)="SetEditingSettings(prop)">
+              </lcu-edit-drag>
+            </div>
+
+              <lcu-edit-controls
+                [is-editing]="IsEditing"
+                [prop]="prop"
+                [prop-name]="propName"
+                (add-property)="AddNestedProperty(i, propName)"
+                (close-edit-control)="CloseControl()"
+                (remove-property)="RemoveSchemaProperty(i)"
+                (save-property)="SaveSchemaProperty(propName, prop, PropNameFldValue)">
+              </lcu-edit-controls>
+            </div>
+          </mat-card-content>
+        </ng-container>
+      </mat-card>

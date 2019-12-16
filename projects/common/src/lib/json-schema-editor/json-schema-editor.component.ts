@@ -1,3 +1,4 @@
+import { Constants } from './../utils/constants.utils';
 import { ModifiedFormControlModel } from './../models/modified-form-control.model';
 import { SchemaPropertyModel } from './../models/schema-property.model';
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
@@ -6,6 +7,8 @@ import { debounceTime, distinctUntilChanged, switchMap, map, pairwise } from 'rx
 import { JSONSchema, JSONFlattenUnflatten, IsDataTypeUtil } from '@lcu/common';
 import { FormBuilder, FormControl, FormGroup, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { SelectModel } from '../models/select.model';
+import { SchemaEventsService } from '../services/schema-events.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 
 @Component({
@@ -30,11 +33,16 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
 
     public set Schema(schema: JSONSchema) {
-      if (!schema || Object.entries(schema.properties).length === 0 && schema.properties.constructor === Object) {
+      this.schema = schema;
+
+      if (!schema) {
         return;
       }
 
-      this.schema = schema;
+      setTimeout(() => {
+        this.schemaEventService.SchemaChanged(schema);
+      }, 500);
+
       this.updateSchemaControl();
       this.iterateSchema(schema);
       this.PivotProperties();
@@ -85,9 +93,15 @@ export class JSONSchemaEditorComponent implements OnInit {
     // protected propertyKeys: Array<SchemaPropertyModel>;
     protected propertyKeys: Array<string>;
 
+    // protected addPropertyEvent: Subscription;
+    // protected closeEditControlEvent: Subscription;
+    // protected removePropertyEvent: Subscription;
+    // protected savePropertyEvent: Subscription;
 
     // 	Constructors
-    constructor(protected formBuilder: FormBuilder) {
+    constructor(
+      protected formBuilder: FormBuilder, 
+      protected schemaEventService: SchemaEventsService) {
       this.Changed = new EventEmitter();
     }
 
@@ -96,6 +110,22 @@ export class JSONSchemaEditorComponent implements OnInit {
 
       this.setupForm();
       
+      // this.addPropertyEvent = this.schemaEventService.AddPropertyEvent.subscribe((data: any) => {
+  
+      // });
+
+      // this.closeEditControlEvent = this.schemaEventService.CloseEditControlEvent.subscribe((data: any) => {
+  
+      // });
+
+      // this.removePropertyEvent = this.schemaEventService.RemovePropertyEvent.subscribe((data: any) => {
+  
+      // });
+
+      // this.savePropertyEvent = this.schemaEventService.SavePropertyEvent.subscribe((data: any) => {
+  
+      // });
+
       // if (!this.Schema) {
         // this.Schema = { properties: {} } as JSONSchema;
         // this.EmitChange();
@@ -112,6 +142,16 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     public PropertyNameChanged(val: string): void {
       this.PropNameFldValue = val;
+    }
+
+    /**
+     * Stub out a new schema
+     */
+    public CreateNewSchema(): void {
+      if (this.Schema) {
+        this.Schema = null;
+      }
+      this.Schema = Constants.DEFAULT_SCHEMA;
     }
 
     /**
@@ -145,11 +185,12 @@ export class JSONSchemaEditorComponent implements OnInit {
      */
     public AddNestedProperty(idx: number, parentPropertyName: string): void {
       const prop = {} as JSONSchema;
+      prop['isChild'] = true;
       const parentProperty: any = this.Schema.properties[parentPropertyName];
       const parentKeys: Array<string> = Object.keys(this.Schema.properties[parentPropertyName]);
       const index: number = parentKeys.length;
 
-      this.Schema.properties[parentPropertyName]['Child Property ' + index.toString()] = prop;
+      this.Schema.properties[parentPropertyName]['Child'] = prop;
 
       this.SetEditingSettings(prop);
     }
@@ -164,8 +205,9 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     public PivotProperties() {
       if (this.Schema) {
-        this.SortedProperties = Object.keys(this.Schema.properties);
-        // this.SortedProperties = this.propertyKeys;
+       this.SortedProperties = Object.keys(this.Schema.properties);
+
+      // this.SortedProperties = this.propertyKeys;
         this.createPropertyControls();
       }
     }
@@ -213,7 +255,7 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     public SetEditingSettings(prop: JSONSchema) {
       if (this.IsEditingSettings(prop)) {
-        this.CloseEditControl();
+        // this.CloseEditControl();
       } else {
         this.CurrentlyEditingSettingsFor = prop;
       }
@@ -387,60 +429,66 @@ export class JSONSchemaEditorComponent implements OnInit {
     const propertyKeys: Array<string> = [];
     this.propertyKeys = [];
 
+    flatMap.forEach((itm, i, a) => {
+      console.log('for each');
+      this.getKeys(schema.properties, i, propertyKeys);
+    });
+
     for (const kv of flatMap) {
       flatMapArray.push(kv);
-      this.getKeys(schema.properties, kv[0], propertyKeys);
+     // this.getKeys(schema.properties, kv[0], propertyKeys);
     }
-   // this.getKeys(schema.properties, '', propertyKeys);
+  //  this.getKeys(schema.properties, '', propertyKeys);
   }
 
   protected getKeys(obj: object, propertyPath: string, propertyKeys: Array<string>): string {
 
     const topLevelProperties: Array<string> = Object.keys(obj);
 
-  //   if (topLevelProperties.length > 0) {
-  //     return topLevelProperties.reduce( (acc, curr, idx, arr) => {
+    if (topLevelProperties.length > 0) {
+      return topLevelProperties.reduce( (acc, curr, idx, arr) => {
 
-  //       if (Object.keys(obj[curr])) {
-  //         console.log('first level', curr);
-  //         const newProp: SchemaPropertyModel = new SchemaPropertyModel(
-  //           {
-  //             Description: obj[curr].description,
-  //             PropertyName: curr,
-  //             IsChild: false,
-  //             Type: obj[curr].type,
-  //             Value: curr
-  //           });
-  //         this.propertyKeys.push(newProp);
-  //       }
+        // if (Object.keys(obj[curr])) {
+        if (IsDataTypeUtil.IsObject(obj[curr])) {
+          console.log('first level', curr);
+          const newProp: SchemaPropertyModel = new SchemaPropertyModel(
+            {
+              Description: obj[curr].description,
+              PropertyName: curr,
+              IsChild: false,
+              Type: obj[curr].type,
+              Value: curr
+            });
+          // this.propertyKeys.push(newProp);
+        }
 
-  //       for (const itm of Object.keys(obj[curr])) {
-  //         if (IsDataTypeUtil.IsObject(obj[curr][itm])) {
-  //           console.log('itm', itm);
-  //           const newProp: SchemaPropertyModel = new SchemaPropertyModel(
-  //             {
-  //               Description: obj[curr][itm].description,
-  //               IsChild: true,
-  //               PropertyName: itm,
-  //               PropertyChildName: itm,
-  //               Type: obj[curr][itm].type,
-  //               Value: itm
-  //             });
-  //           this.propertyKeys.push(newProp);
-  //         }
-  //       }
-  //         return acc ? acc[curr] : null; // if acc, then start additional iterations with acc[curr]
-  //     }, obj); // first item to start the loop
-  //  }
-
-    if (propertyPath.split('.').length > 1) {
-      return propertyPath.split('.').reduce( (acc, curr, idx, arr) => {
-          if (IsDataTypeUtil.IsObject(obj[curr]) || acc && IsDataTypeUtil.IsObject(acc[curr])) {
-            console.log('curr', curr);
-            this.propertyKeys.push(curr);
+        for (const itm of Object.keys(obj[curr])) {
+          if (IsDataTypeUtil.IsObject(obj[curr][itm])) {
+            console.log('child itm', itm);
+            const newProp: SchemaPropertyModel = new SchemaPropertyModel(
+              {
+                Description: obj[curr][itm].description,
+                IsChild: true,
+                PropertyName: itm,
+                PropertyChildName: itm,
+                Type: obj[curr][itm].type,
+                Value: itm
+              });
+            // this.propertyKeys.push(newProp);
           }
+        }
           return acc ? acc[curr] : null; // if acc, then start additional iterations with acc[curr]
       }, obj); // first item to start the loop
-    }
+   }
+
+    // if (propertyPath.split('.').length > 1) {
+    //   return propertyPath.split('.').reduce( (acc, curr, idx, arr) => {
+    //       if (IsDataTypeUtil.IsObject(obj[curr]) || acc && IsDataTypeUtil.IsObject(acc[curr])) {
+    //         console.log('curr', curr);
+    //         this.propertyKeys.push(curr);
+    //       }
+    //       return acc ? acc[curr] : null; // if acc, then start additional iterations with acc[curr]
+    //   }, obj); // first item to start the loop
+    // }
   }
 }

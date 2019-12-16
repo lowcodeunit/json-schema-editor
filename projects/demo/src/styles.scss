@@ -3,7 +3,7 @@
 @import '../../../node_modules/@lcu/common/assets/theming/fathym_themes';
 
 @mixin theme-setup($theme) {
-  // @include primary-logo(thinky-logo, $theme, 1);
+  @include primary-logo(thinky-logo, $theme, 1);
   @include angular-material-theme($theme);
   // @include fathym-branding($theme);
   @include theme-extras($theme); 
@@ -17,13 +17,14 @@
   }
 }
 
-// @mixin primary-logo($logo, $theme, $opacity) {
-//   .primary-logo {
-//     // @extend .header-background;
-//     height: 50px !important;
-//     width: 50px !important;
-//     background-image: fathym-logo($logo, mat-color(map-get($theme, accent)), $opacity) !important;
-//   }
-// }
+@mixin primary-logo($logo, $theme, $opacity) {
+  .primary-logo {
+    // @extend .header-background;
+    height: 60px !important;
+    width: 60px !important;
+    background-size: 100% !important;
+    background-image: fathym-logo($logo, mat-color(map-get($theme, accent)), $opacity) !important;
+  }
+}
 
 @include theme-setup(fathym-sea-green-theme(true));

@@ -25,6 +25,9 @@ export class SchemaPropertiesComponent implements OnInit {
   @Input('prop-name')
   public PropName: string;
 
+  /**
+   * Event for when the property name is changed
+   */
   @Output('prop-name-changed')
   public PropNameChanged: EventEmitter<string>;
 

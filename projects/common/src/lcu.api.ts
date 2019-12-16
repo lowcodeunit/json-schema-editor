@@ -7,3 +7,6 @@ export * from './lib/controls/schema-view/schema-view.component';
 export * from './lib/controls/schema-properties/schema-properties.component';
 export * from './lib/services/theme-color-picker.service';
 export * from './lib/directives/emit-event.directive';
+export * from './lib/utils/constants.utils';
+export * from './lib/services/theme-color-picker.service';
+export * from './lib/controls/schema-property-control/schema-property-control.component';
