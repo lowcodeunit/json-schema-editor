@@ -1,110 +1,85 @@
-  <div *ngIf="Schema" fxLayout="column" fxLayoutGap="10px" class="margin-1">
-    <mat-card>
-      <mat-card-header fxLayoutGap="10px">
-        <div class="primary-logo"></div>
-          <!-- <mat-card-content> -->
-            <div fxFlex fxLayout="row" fxLayoutGap="10px">
-              <mat-card-title fxLayoutAlign="center center">JSON Schema Editor</mat-card-title>
-              <div fxFlex fxLayoutAlign="end center">
-                <button 
-                  type="button" 
-                  mat-raised-button 
-                  color="primary" 
-                  matTooltip="Add New Property" 
-                  matTooltipPosition="above"
-                  (click)="CreateNewSchema()">
-                  Create a new Schema
-                <mat-icon>add</mat-icon>
-                </button>
-              </div>
-            </div>
-          <!-- </mat-card-content> -->
-      </mat-card-header>
-    </mat-card>
-    
-    <lcu-schema-keywords [schema]="Schema"></lcu-schema-keywords>
+<div *ngIf="Schema" fxLayout="column" fxLayoutGap="10px" class="margin-1">
+  <lcu-schema-keywords *ngIf="!IsChildSchema" [schema]="Schema"></lcu-schema-keywords>
 
-    <!--Schema Properties-->
-    <div fxFlex fxLayout.xl="row" fxLayout.lg="row" fxLayout.sm="column" fxLayout.xs="column" fxLayoutGap="10px">
-      <mat-card>
-        <mat-card-header>
-            <mat-card-title class="paragraph-title">Schema Properties</mat-card-title>
-            <mat-card-subtitle class="plain-text">Associated Schema Properties</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-      <div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
-        <div fxLayout="row" fxLayoutAlign="end center">
-          <h3>
-            <button 
-              type="button" 
-              mat-button button 
-              color="primary" 
-              matTooltip="Add New Property" 
-              matTooltipPosition="above"
-              (click)="AddProperty()">
-              Add Schema Property
-              <mat-icon>add</mat-icon>
-            </button>
-          </h3>
-        </div>
-      <mat-card
-        class="no-pointer margin-bottom-2 cursor-default"
-        *ngFor="let propName of SortedProperties; let i = index"
-        dnd-sortable
-        [sortableIndex]="i"
-        (dragend)="SortSuccess()">
-        <!-- <pre>{{Schema.properties['firstName']['userName'] | json}}</pre> -->
-        <ng-container *ngIf="Schema.properties[propName]; let prop">
-          <!-- <lcu-schema-property-control
+  <!--Schema Properties-->
+  <div fxFlex fxLayout.xl="row" fxLayout.lg="row" fxLayout.sm="column" fxLayout.xs="column" fxLayoutGap="10px">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title class="paragraph-title">Schema Properties</mat-card-title>
+        <mat-card-subtitle class="plain-text">Associated Schema Properties</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <h3>
+              <button
+                type="button"
+                mat-button
+                button
+                color="primary"
+                matTooltip="Add New Property"
+                matTooltipPosition="above"
+                (click)="AddProperty()"
+              >
+                Add Schema Property
+                <mat-icon>add</mat-icon>
+              </button>
+            </h3>
+          </div>
+
+          <mat-card
+            class="no-pointer margin-bottom-2 cursor-default"
+            *ngFor="let propName of SortedProperties; let i = index"
+            dnd-sortable
+            [sortableIndex]="i"
+            (dragend)="SortSuccess()"
+          >
+            <!-- <pre>{{Schema.properties['firstName']['userName'] | json}}</pre> -->
+            <ng-container *ngIf="Schema.properties[propName]; let prop">
+              <!-- <lcu-schema-property-control
             [is-editing]="IsEditingSettings(prop)"
             [prop]="prop"
             [prop-name]="propName">
           </lcu-schema-property-control> -->
-          <mat-card-content>
-            <div fxLayout="row" fxLayoutGap="30px">
-              <div fxFlex="auto">
-                  <lcu-schema-properties 
+              <mat-card-content>
+                <mat-toolbar *ngIf="IsEditingSettings(prop)">
+                  <lcu-edit-controls
                     [is-editing]="IsEditingSettings(prop)"
                     [prop]="prop"
                     [prop-name]="propName"
-                    (prop-name-changed)="PropertyNameChanged($event)">
-                </lcu-schema-properties>
-              </div>
-         
-            <div fxLayout="row" fxLayoutAlign="end center">
-              <lcu-edit-drag 
-                [prop]="prop" 
-                [is-editing]="!IsEditingSettings(prop)"
-                (editing-settings)="SetEditingSettings(prop)">
-              </lcu-edit-drag>
-            </div>
-   
-              <lcu-edit-controls
-                [is-editing]="IsEditingSettings(prop)"
-                [prop]="prop"
-                [prop-name]="propName"
-                (add-property)="AddNestedProperty(i, propName)"
-                (close-edit-control)="CloseEditControl()"
-                (remove-property)="RemoveProperty(i)"
-                (save-property)="SaveProperty(propName, prop, PropNameFldValue)">
-              </lcu-edit-controls>
-            </div>
-            <div *ngIf="prop.type === 'object'">
-              <!-- <h4>Object Schema</h4>
-              <pre>{{prop | json}}</pre> -->
-              <!-- <lcu-json-schema-editor
-                [(schema)]="prop.oneOf[0]"
-                [show-validations]="ShowValidations">
-              </lcu-json-schema-editor> -->
-            </div>
-          </mat-card-content>
-        </ng-container>
-      </mat-card>
-      <p *ngIf="!Schema.properties || SortedProperties?.length === 0">Add a New Property to Get Started</p>
-    </div>
-  </mat-card-content>
-  </mat-card>
+                    (add-property)="AddNestedProperty(i, propName)"
+                    (close-edit-control)="CloseEditControl()"
+                    (remove-property)="RemoveProperty(i)"
+                    (save-property)="SaveProperty(propName, prop, PropNameFldValue)"
+                  >
+                  </lcu-edit-controls>
+                </mat-toolbar>
 
-  <!--Schema View-->
-  <lcu-schema-view fxFlex [schema]="Schema"></lcu-schema-view>
+                <div fxLayout="row" fxLayoutGap="30px">
+                  <div fxFlex="auto">
+                    <lcu-schema-properties
+                      [is-editing]="IsEditingSettings(prop)"
+                      [prop]="prop"
+                      [prop-name]="propName"
+                      (prop-name-changed)="PropertyNameChanged($event)"
+                    >
+                    </lcu-schema-properties>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="end center">
+                    <lcu-edit-drag [prop]="prop" [is-editing]="!IsEditingSettings(prop)" (editing-settings)="SetEditingSettings(prop)">
+                    </lcu-edit-drag>
+                  </div>
+                </div>
+              </mat-card-content>
+            </ng-container>
+          </mat-card>
+          <p *ngIf="!Schema.properties || SortedProperties?.length === 0">Add a New Property to Get Started</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!--Schema View-->
+    <lcu-schema-view fxFlex [schema]="Schema" *ngIf="!IsChildSchema"></lcu-schema-view>
+  </div>
 </div>

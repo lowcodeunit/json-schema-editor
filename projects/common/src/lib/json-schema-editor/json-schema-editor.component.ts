@@ -28,6 +28,9 @@ export class JSONSchemaEditorComponent implements OnInit {
     @Output('schemaChange')
     public Changed: EventEmitter<JSONSchema>;
 
+    @Input('child-schema')
+    public IsChildSchema: boolean;
+
     @Input('schema')
     public get Schema(): JSONSchema {
       return this.schema;
@@ -45,7 +48,7 @@ export class JSONSchemaEditorComponent implements OnInit {
       }, 500);
 
       this.updateSchemaControl();
-      this.iterateSchema(schema);
+      // this.iterateSchema(schema);
       this.PivotProperties();
     }
 
@@ -143,16 +146,6 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     public PropertyNameChanged(val: string): void {
       this.PropNameFldValue = val;
-    }
-
-    /**
-     * Stub out a new schema
-     */
-    public CreateNewSchema(): void {
-      if (this.Schema) {
-        this.Schema = null;
-      }
-      this.Schema = Constants.DEFAULT_SCHEMA;
     }
 
     /**
@@ -360,7 +353,7 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
 
     this.changedFormControl.PreviousValue.Value = changedValue.SchemaPropertyControls[this.changedFormControl.Index];
-    this.changedFormControl.Control.setValue(this.changedFormControl.PreviousValue, {onlySelf: true, emitEvent: false});
+    // this.changedFormControl.Control.setValue(this.changedFormControl.PreviousValue, {onlySelf: true, emitEvent: false});
   }
 
   protected getSelectedCtrl(): any {
@@ -380,7 +373,7 @@ export class JSONSchemaEditorComponent implements OnInit {
     * @param schema JSON to search through
     */
   protected updateSchemaControl(): void {
-    this.ModifiedSchemaControl.setValue(JSON.stringify(this.schema, null, 5)); // null, 5 keeps JSON format
+    // this.ModifiedSchemaControl.setValue(JSON.stringify(this.schema, null, 5)); // null, 5 keeps JSON format
   }
 
   protected createPropertyControls(): void {
@@ -407,7 +400,7 @@ export class JSONSchemaEditorComponent implements OnInit {
 
   protected buildPropertyControls(): FormArray {
 
-    if (this.SortedProperties && this.SortedProperties.length > 0) {
+    if (this.SchemaPropertyList && this.SchemaPropertyList.length > 0) {
       const arr = this.SchemaPropertyList.map(propCtrl => {
         return this.formBuilder.control(propCtrl);
       });

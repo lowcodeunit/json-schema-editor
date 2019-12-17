@@ -1,2 +1,27 @@
-<lcu-json-schema-editor [(schema)]="JSONSchema"></lcu-json-schema-editor>
+
+  <mat-card>
+    <mat-card-header fxLayoutGap="10px">
+      <div class="primary-logo"></div>
+      <!-- <mat-card-content> -->
+      <div fxFlex fxLayout="row" fxLayoutGap="10px">
+        <mat-card-title fxLayoutAlign="center center">JSON Schema Editor</mat-card-title>
+        <div fxFlex fxLayoutAlign="end center">
+          <button
+            type="button"
+            mat-raised-button
+            color="primary"
+            matTooltip="Add New Property"
+            matTooltipPosition="above"
+            (click)="CreateNewSchema()"
+          >
+            Create a new Schema
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+      <!-- </mat-card-content> -->
+    </mat-card-header>
+  </mat-card>
+
+  <lcu-json-schema-editor [(schema)]="JSONSchema"></lcu-json-schema-editor>
 
