@@ -1,31 +1,32 @@
-<div *ngIf="Schema" fxLayout="column" fxLayoutGap="10px" class="margin-1">
+<div *ngIf="Schema" fxLayout="column" fxLayoutGap="5px" class="margin-1">
     <lcu-schema-keywords *ngIf="!IsChildSchema" [schema]="Schema"></lcu-schema-keywords>
   
     <!--Schema Properties-->
-    <div fxFlex fxLayout.xl="row" fxLayout.lg="row" fxLayout.sm="column" fxLayout.xs="column" fxLayoutGap="10px">
+    <div fxFlex fxLayout.xl="row" fxLayout.lg="row" fxLayout.sm="column" fxLayout.xs="column" fxLayoutGap="5px">
       <mat-card>
-        <mat-card-header>
+        <mat-card-header *ngIf="!IsChildSchema">
           <mat-card-title class="paragraph-title">Schema Properties</mat-card-title>
           <mat-card-subtitle class="plain-text">Associated Schema Properties</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
-            <div fxLayout="row" fxLayoutAlign="end center">
+            <div fxLayout="row" fxLayoutAlign="end center" class="margin-bottom-3">
               <h3>
                 <button
                   type="button"
                   mat-button
                   button
-                  color="primary"
+                  color="accent"
                   matTooltip="Add New Property"
                   matTooltipPosition="above"
                   (click)="AddProperty()">
                   Add Schema Property
                   <mat-icon>add</mat-icon>
                 </button>
+                <mat-divider inset></mat-divider>
               </h3>
             </div>
-  
+
             <mat-card
               class="no-pointer margin-bottom-2 cursor-default"
               *ngFor="let propName of SortedProperties; let i = index"
@@ -33,7 +34,6 @@
               [sortableIndex]="i"
               (dragend)="SortSuccess()"
             >
-              <!-- <pre>{{Schema.properties['firstName']['userName'] | json}}</pre> -->
               <ng-container *ngIf="Schema.properties[propName]; let prop">
                 <!-- <lcu-schema-property-control
               [is-editing]="IsEditingSettings(prop)"
@@ -41,7 +41,9 @@
               [prop-name]="propName">
             </lcu-schema-property-control> -->
                 <mat-card-content>
-                  <mat-toolbar *ngIf="IsEditingSettings(prop)">
+                  <div
+                    class="margin-1 margin-bottom-3" 
+                    *ngIf="IsEditingSettings(prop)">
                     <lcu-edit-controls
                       [is-editing]="IsEditingSettings(prop)"
                       [prop]="prop"
@@ -49,10 +51,10 @@
                       (add-property)="AddNestedProperty(i, propName)"
                       (close-edit-control)="CloseEditControl()"
                       (remove-property)="RemoveProperty(i)"
-                      (save-property)="SaveProperty(propName, prop, PropNameFldValue)"
-                    >
+                      (save-property)="SaveProperty(propName, prop, PropNameFldValue)">
                     </lcu-edit-controls>
-                  </mat-toolbar>
+                    <mat-divider inset></mat-divider>
+                  </div>
   
                   <div fxLayout="row" fxLayoutGap="30px">
                     <div fxFlex="auto">
@@ -60,8 +62,8 @@
                         [is-editing]="IsEditingSettings(prop)"
                         [prop]="prop"
                         [prop-name]="propName"
-                        (prop-name-changed)="PropertyNameChanged($event)"
-                      >
+                        [schema]="Schema"
+                        (prop-name-changed)="PropertyNameChanged($event)">
                       </lcu-schema-properties>
                     </div>
   

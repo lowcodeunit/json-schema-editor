@@ -111,16 +111,17 @@ export class JSONSchemaEditorComponent implements OnInit {
      *
      * @param parentPropertyName parent property name
      */
+    // may not need to do this -shannon
     public AddNestedProperty(idx: number, parentPropertyName: string): void {
-      const prop = {} as JSONSchema;
-      prop['isChild'] = true;
-      const parentProperty: any = this.Schema.properties[parentPropertyName];
-      const parentKeys: Array<string> = Object.keys(this.Schema.properties[parentPropertyName]);
-      const index: number = parentKeys.length;
+    //   const prop = {} as JSONSchema;
+    //   prop['isChild'] = true;
+    //   const parentProperty: any = this.Schema.properties[parentPropertyName];
+    //   const parentKeys: Array<string> = Object.keys(this.Schema.properties[parentPropertyName]);
+    //   const index: number = parentKeys.length;
 
-      this.Schema.properties[parentPropertyName]['Child'] = prop;
+    //   this.Schema.properties[parentPropertyName]['Child'] = prop;
 
-      this.SetEditingSettings(prop);
+    //   this.SetEditingSettings(prop);
     }
 
     public EmitChange() {
@@ -132,7 +133,7 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
 
     public PivotProperties() {
-      if (this.Schema) {
+      if (this.Schema && this.Schema.properties) {
        this.SortedProperties = Object.keys(this.Schema.properties);
       }
     }
