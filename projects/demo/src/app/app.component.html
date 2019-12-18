@@ -22,11 +22,13 @@
   </mat-card>
 
 <lcu-json-schema-editor 
+  [show-save-button]="true"
+  (save-schema)="Save($event)"
   (schema-changed)="SchemaChanged($event)" 
   [(schema)]="JSONSchema">
 </lcu-json-schema-editor>
 <!-- <pre>{{JSONSchema | json}}</pre> -->
-<mat-card class="margin-1">
+<!-- <mat-card class="margin-1">
     <mat-card-content>
         <div fxFlex fxLayoutAlign="end center">
             <button 
@@ -40,4 +42,4 @@
             </button>
           </div>
     </mat-card-content>
-  </mat-card>
+  </mat-card> -->

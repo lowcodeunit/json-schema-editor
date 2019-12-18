@@ -14,8 +14,8 @@ export class JSONSchemaEditorComponent implements OnInit {
     // 	Properties
     public CurrentlyEditingSettingsFor: JSONSchema;
 
-    @Output('save')
-    public Save: EventEmitter<JSONSchema>;
+    @Output('save-schema')
+    public SaveSchema: EventEmitter<JSONSchema>;
 
     @Output('schema-changed')
     public SchemaChanged: EventEmitter<JSONSchema>;
@@ -65,6 +65,7 @@ export class JSONSchemaEditorComponent implements OnInit {
       protected formBuilder: FormBuilder, 
       protected schemaEventService: SchemaEventsService) {
       this.SchemaChanged = new EventEmitter();
+      this.SaveSchema = new EventEmitter();
     }
 
     // 	Runtime
@@ -185,6 +186,13 @@ export class JSONSchemaEditorComponent implements OnInit {
       }
 
       this.EmitChange();
+    }
+
+    /**
+     * Save the schema
+     */
+    public SaveSchemaChanges(): void {
+      this.SaveSchema.emit(this.Schema);
     }
 
     public CloseEditControl(): void {

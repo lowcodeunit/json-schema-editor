@@ -83,4 +83,19 @@
       <!--Schema View-->
       <lcu-schema-view fxFlex [schema]="Schema" *ngIf="!IsChildSchema"></lcu-schema-view>
     </div>
+    <mat-card class="margin-1" *ngIf="ShowSaveButton">
+      <mat-card-content>
+          <div fxFlex fxLayoutAlign="end center">
+              <button 
+                type="button" 
+                mat-raised-button 
+                color="accent" 
+                matTooltip="Save Schema" 
+                matTooltipPosition="above"
+                (click)="SaveSchemaChanges()">
+                <mat-icon>save</mat-icon> Save
+              </button>
+            </div>
+      </mat-card-content>
+    </mat-card>
   </div>
