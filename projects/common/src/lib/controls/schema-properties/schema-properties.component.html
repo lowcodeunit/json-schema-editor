@@ -54,7 +54,8 @@
           </mat-checkbox>-->
       <!-- </div> -->
 
-      <div *ngIf="Prop.type == 'object'">
+      <div *ngIf="Prop.type === 'object'">
+        <pre>{{Prop | json}}</pre>
         <lcu-json-schema-editor [(schema)]="Prop" [child-schema]="true"> </lcu-json-schema-editor>
       </div>
     </div>

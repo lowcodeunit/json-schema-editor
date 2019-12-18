@@ -1,10 +1,10 @@
 
-  <mat-card>
-    <mat-card-header fxLayoutGap="10px">
+
+  <mat-card class="margin-1">
+    <mat-card-header>
       <div class="primary-logo"></div>
-      <!-- <mat-card-content> -->
       <div fxFlex fxLayout="row" fxLayoutGap="10px">
-        <mat-card-title fxLayoutAlign="center center">JSON Schema Editor</mat-card-title>
+        <mat-card-title fxLayoutAlign="center center" class="margin-left-2">JSON Schema Editor</mat-card-title>
         <div fxFlex fxLayoutAlign="end center">
           <button
             type="button"
@@ -12,16 +12,29 @@
             color="primary"
             matTooltip="Add New Property"
             matTooltipPosition="above"
-            (click)="CreateNewSchema()"
-          >
+            (click)="CreateNewSchema()">
             Create a new Schema
             <mat-icon>add</mat-icon>
           </button>
         </div>
       </div>
-      <!-- </mat-card-content> -->
     </mat-card-header>
   </mat-card>
 
-  <lcu-json-schema-editor [(schema)]="JSONSchema"></lcu-json-schema-editor>
+<lcu-json-schema-editor [(schema)]="JSONSchema"></lcu-json-schema-editor>
 
+<mat-card class="margin-1">
+    <mat-card-content>
+        <div fxFlex fxLayoutAlign="end center">
+            <button 
+              disabled
+              type="button" 
+              mat-raised-button 
+              color="accent" 
+              matTooltip="Save Schema" 
+              matTooltipPosition="above">
+              <mat-icon>save</mat-icon> Save
+            </button>
+          </div>
+    </mat-card-content>
+  </mat-card>
