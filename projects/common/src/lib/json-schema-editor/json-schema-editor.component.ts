@@ -11,32 +11,37 @@ import { SchemaEventsService } from '../services/schema-events.service';
 
 export class JSONSchemaEditorComponent implements OnInit {
 
-    // 	Fields
-    protected schema: JSONSchema;
-
     // 	Properties
     public CurrentlyEditingSettingsFor: JSONSchema;
 
-    @Output('schemaChange')
-    public Changed: EventEmitter<JSONSchema>;
+    @Output('save')
+    public Save: EventEmitter<JSONSchema>;
+
+    @Output('schema-changed')
+    public SchemaChanged: EventEmitter<JSONSchema>;
 
     @Input('child-schema')
     public IsChildSchema: boolean;
 
+    private _schema: JSONSchema;
     @Input('schema')
     public get Schema(): JSONSchema {
-      return this.schema;
+      return this._schema;
     }
 
     public set Schema(schema: JSONSchema) {
-      this.schema = schema;
+      this._schema = schema;
 
       if (!schema) {
         return;
       }
 
+      this.EmitChange();
       this.PivotProperties();
     }
+
+    @Input('show-save-button')
+    public ShowSaveButton: boolean;
 
     @Input('show-validations')
     public ShowValidations: boolean;
@@ -59,7 +64,7 @@ export class JSONSchemaEditorComponent implements OnInit {
     constructor(
       protected formBuilder: FormBuilder, 
       protected schemaEventService: SchemaEventsService) {
-      this.Changed = new EventEmitter();
+      this.SchemaChanged = new EventEmitter();
     }
 
     // 	Runtime
@@ -80,6 +85,7 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     public PropertyNameChanged(val: string): void {
       this.PropNameFldValue = val;
+      this.EmitChange();
     }
 
     /**
@@ -96,8 +102,8 @@ export class JSONSchemaEditorComponent implements OnInit {
         index = parseInt(Object.keys(this.Schema.properties)[(Object.keys(this.Schema.properties).length - 1).toString()]) + 1;
       }
 
-      if (!this.schema.properties) {
-        this.schema.properties = {};
+      if (!this.Schema.properties) {
+        this.Schema.properties = {};
       }
 
       this.Schema.properties[index.toString()] = prop;
@@ -105,7 +111,7 @@ export class JSONSchemaEditorComponent implements OnInit {
       this.SetEditingSettings(prop);
 
       this.Schema = this.Schema;
-     // this.EmitChange();
+      this.EmitChange();
     }
 
     /**
@@ -129,7 +135,7 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
 
     public EmitChange() {
-      this.Changed.emit(this.Schema);
+      this.SchemaChanged.emit(this.Schema);
     }
 
     public IsEditingSettings(prop: JSONSchema) {
@@ -144,8 +150,8 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     public RemoveProperty(propIndex: string) {
       let msg = 'Are you sure you want to delete this property?';
-      const propName: string = Object.keys(this.schema.properties)[propIndex];
-      const property: any = this.schema.properties[Object.keys(this.schema.properties)[propIndex]];
+      const propName: string = Object.keys(this.Schema.properties)[propIndex];
+      const property: any = this.Schema.properties[Object.keys(this.Schema.properties)[propIndex]];
       // if (this.Schema.properties[propIndex].title) {
       //   msg = `Are you sure you want to delete property '${this.Schema.properties[propIndex].title}'?`;
       // }
@@ -157,7 +163,7 @@ export class JSONSchemaEditorComponent implements OnInit {
       if (confirm(msg)) {
         delete this.Schema.properties[propName];
         this.Schema = this.Schema;
-        // this.EmitChange();
+        this.EmitChange();
       }
     }
 
@@ -177,6 +183,8 @@ export class JSONSchemaEditorComponent implements OnInit {
 
         this.SortSuccess();
       }
+
+      this.EmitChange();
     }
 
     public CloseEditControl(): void {
@@ -199,5 +207,6 @@ export class JSONSchemaEditorComponent implements OnInit {
       });
 
       this.Schema.properties = tmpProps;
+      this.EmitChange();
     }
 }

@@ -8,8 +8,20 @@ import { JSONSchema } from '@lcu/common';
 })
 export class SchemaViewComponent implements OnInit {
 
+  private _schema: JSONSchema;
+
+  @Input('stringify-schema')
+  public StringifySchema: boolean;
+
   @Input('schema')
-  public Schema: JSONSchema;
+  public set Schema(val: JSONSchema) {
+    this._schema = val;
+    // this._schema = JSON.stringify(val, null, 5);
+  }
+
+  public get Schema(): JSONSchema {
+    return this._schema;
+  }
 
   constructor() { }
 
