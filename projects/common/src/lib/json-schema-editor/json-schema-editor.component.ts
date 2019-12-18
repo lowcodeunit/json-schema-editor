@@ -92,8 +92,12 @@ export class JSONSchemaEditorComponent implements OnInit {
 
       let index = 0;
 
-      if (Object.keys(this.Schema.properties).length > 0) {
+      if (this.Schema.properties && Object.keys(this.Schema.properties).length > 0) {
         index = parseInt(Object.keys(this.Schema.properties)[(Object.keys(this.Schema.properties).length - 1).toString()]) + 1;
+      }
+
+      if (!this.schema.properties) {
+        this.schema.properties = {};
       }
 
       this.Schema.properties[index.toString()] = prop;
