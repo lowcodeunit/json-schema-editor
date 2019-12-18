@@ -21,18 +21,21 @@
     </mat-card-header>
   </mat-card>
 
-<lcu-json-schema-editor [(schema)]="JSONSchema"></lcu-json-schema-editor>
-
+<lcu-json-schema-editor 
+  (schema-changed)="SchemaChanged($event)" 
+  [(schema)]="JSONSchema">
+</lcu-json-schema-editor>
+<!-- <pre>{{JSONSchema | json}}</pre> -->
 <mat-card class="margin-1">
     <mat-card-content>
         <div fxFlex fxLayoutAlign="end center">
             <button 
-              disabled
               type="button" 
               mat-raised-button 
               color="accent" 
               matTooltip="Save Schema" 
-              matTooltipPosition="above">
+              matTooltipPosition="above"
+              (click)="Save(JSONSchema)">
               <mat-icon>save</mat-icon> Save
             </button>
           </div>

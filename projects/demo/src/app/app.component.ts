@@ -12,7 +12,15 @@ export class AppComponent implements OnInit {
   /**
    * Schema
    */
-  public JSONSchema: JSONSchema;
+  private _schema: JSONSchema;
+  public set JSONSchema(val: JSONSchema) {
+    console.log('schema setter changed', val);
+    this._schema = val;
+  }
+
+  public get JSONSchema(): JSONSchema {
+    return this._schema;
+  }
 
   constructor() {}
 
@@ -30,6 +38,19 @@ export class AppComponent implements OnInit {
         this.JSONSchema = null;
       }
       this.JSONSchema = Constants.DEFAULT_SCHEMA;
+    }
+
+    public Save(schema: JSONSchema): void {
+      console.log('save', schema);
+    }
+
+    /**
+     * When schema changes
+     *
+     * @param schema new schema
+     */
+    public SchemaChanged(schema: JSONSchema): void {
+      console.log('schema changed', schema);
     }
 
   protected getSchema(): JSONSchema {
