@@ -1,69 +1,63 @@
 <div fxFlex="auto">
-    <div fxLayout="column">
-      <h3 [fxShow]="!IsEditing">{{ PropName }}</h3>
-      <mat-form-field [fxShow]="IsEditing">
-        <input
-          type="text"
-          matInput
-          [name]="PropName + 'PropName'"
-          [value]="PropName"
-          placeholder="Property Name"
-          required
-          (keyup)="ProperyNameChanged(PropNameFld.value)"
-          #PropNameFld/>
-      </mat-form-field>
+  <div fxLayout="column">
+    <h3 [fxShow]="!IsEditing">{{ PropName }}</h3>
+    <mat-form-field [fxShow]="IsEditing">
+      <input
+        type="text"
+        matInput
+        [name]="PropName + 'PropName'"
+        [value]="PropName"
+        placeholder="Property Name"
+        required
+        (keyup)="ProperyNameChanged(PropNameFld.value)"
+        #PropNameFld
+      />
+    </mat-form-field>
 
-      <mat-form-field *ngIf="Prop.description" [fxShow]="IsEditing">
-        <input
-          type="text"
-          matInput
-          [name]="PropName + 'PropName'"
-          [(ngModel)]="Prop.description"
-          placeholder="Property Description"
-          required
-          #propDescriptionFld/>
-      </mat-form-field>
+    <mat-form-field *ngIf="Prop.description" [fxShow]="IsEditing">
+      <input
+        type="text"
+        matInput
+        [name]="PropName + 'PropName'"
+        [(ngModel)]="Prop.description"
+        placeholder="Property Description"
+        required
+        #propDescriptionFld
+      />
+    </mat-form-field>
 
-      <mat-form-field *ngIf="Prop.minimum > -1" [fxShow]="IsEditing">
-          <input
-            type="text"
-            matInput
-            [name]="PropName + 'PropName'"
-            [(ngModel)]="Prop.minimum"
-            placeholder="Property Minimum"
-            required
-            #propMinimumFld/>
-        </mat-form-field>
+    <mat-form-field *ngIf="Prop.minimum > -1" [fxShow]="IsEditing">
+      <input
+        type="text"
+        matInput
+        [name]="PropName + 'PropName'"
+        [(ngModel)]="Prop.minimum"
+        placeholder="Property Minimum"
+        required
+        #propMinimumFld
+      />
+    </mat-form-field>
 
-      <div [fxShow]="IsEditing">
-          <div>
-            <lcu-data-type-select
-              [prop]="Prop"
-              [prop-name]="PropName">
-            </lcu-data-type-select>
-            <!--<mat-checkbox [(ngModel)]="Prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropId'">
+    <div [fxShow]="IsEditing">
+      <div>
+        <lcu-data-type-select [prop]="Prop" [prop-name]="PropName"> </lcu-data-type-select>
+        <!--<mat-checkbox [(ngModel)]="Prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropId'">
             Is Identifier
           </mat-checkbox>-->
-          </div>
+      </div>
 
-          <!-- <div *ngIf="ShowValidations">
+      <!-- <div *ngIf="ShowValidations">
             <h4>Validations</h4> -->
 
-            <!--<mat-checkbox [(ngModel)]="Prop.Required" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropRequired'">
+      <!--<mat-checkbox [(ngModel)]="Prop.Required" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropRequired'">
             Required
           </mat-checkbox>-->
-          <!-- </div> -->
+      <!-- </div> -->
 
-          <div *ngIf="Prop.type == 'object'">
-            <h4>Object Schema</h4>
-
-            <!-- <lcu-json-schema-editor
-              [(schema)]="Prop.oneOf[0]"
-              [show-validations]="ShowValidations"
-            > -->
-            <!-- </lcu-json-schema-editor> -->
-          </div>
-        </div>
+      <div *ngIf="Prop.type === 'object'">
+        <lcu-json-schema-editor [(schema)]="Prop" [child-schema]="true"> </lcu-json-schema-editor>
+      </div>
     </div>
-    <ng-content></ng-content>
   </div>
+  <ng-content></ng-content>
+</div>
