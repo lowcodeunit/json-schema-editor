@@ -1,3 +1,4 @@
+import { JSONSchema } from '@lcu/common';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
@@ -22,8 +23,20 @@ export class SchemaPropertiesComponent implements OnInit {
   /**
    * Current property name
    */
+  private _propName: string;
   @Input('prop-name')
-  public PropName: string;
+  public set PropName(val: string) {
+    this._propName = val;
+  }
+  public get PropName(): string {
+    return this._propName;
+  }
+
+  /**
+   * Current schema
+   */
+  @Input('schema')
+  public Schema: JSONSchema;
 
   /**
    * Event for when the property name is changed

@@ -1,4 +1,4 @@
-<div fxLayout="row">
+<div fxLayout="row" fxLayoutAlign="end center">
     <ng-container *ngIf="IsEditing">
       <div *ngIf="IsEditing" (click)="Remove()">
         <button 
@@ -10,16 +10,16 @@
           <mat-icon>delete</mat-icon>
         </button>
       </div>
-      <div *ngIf="IsEditing" (click)="Add()">
-          <button 
-            type="button" 
-            mat-button 
-            color="accent"
-            matTooltip="Add Property" 
-            matTooltipPosition="above">
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
+      <!-- <div *ngIf="IsEditing && Prop.type === 'object'" (click)="Add()">
+        <button 
+          type="button" 
+          mat-button 
+          color="accent"
+          matTooltip="Add Property" 
+          matTooltipPosition="above">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div> -->
 
       <div (click)="Save()">
         <button 

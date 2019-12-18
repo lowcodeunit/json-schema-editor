@@ -96,14 +96,14 @@ export class SchemaPropertyControlComponent implements OnInit {
   /**
    * Schema changed event
    */
-  protected schemaChangeSubscription: Subscription;
+  // protected schemaChangeSubscription: Subscription;
 
   constructor(protected schemaEventsService: SchemaEventsService) { }
 
   ngOnInit() {
-    this.schemaChangeSubscription = this.schemaEventsService.SchemaChangedEvent.subscribe((data: JSONSchema) => {
-      this.Schema = data;
-    });
+    // this.schemaChangeSubscription = this.schemaEventsService.SchemaChangedEvent.subscribe((data: JSONSchema) => {
+    //   this.Schema = data;
+    // });
   }
 
   public PivotProperties(): void {
