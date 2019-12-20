@@ -2,6 +2,7 @@
         class="no-pointer margin-bottom-2 cursor-default"
         *ngFor="let propName of SortedProperties; let i = index"
         dnd-sortable
+        [id]="propName"
         [sortableIndex]="i"
         (dragend)="SortSuccess()">
         <ng-container *ngIf="Schema.properties[propName]; let prop">
