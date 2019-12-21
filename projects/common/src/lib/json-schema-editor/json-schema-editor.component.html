@@ -1,5 +1,5 @@
 <div *ngIf="Schema" fxLayout="column" fxLayoutGap="5px" class="margin-1">
-    <lcu-schema-keywords *ngIf="!IsChildSchema" [schema]="Schema"></lcu-schema-keywords>
+    <lcu-schema-keywords id="schemaKeywords" name="schemaKeywords" *ngIf="!IsChildSchema" [schema]="Schema"></lcu-schema-keywords>
   
     <!--Schema Properties-->
     <div fxFlex fxLayout.xl="row" fxLayout.lg="row" fxLayout.sm="column" fxLayout.xs="column" fxLayoutGap="5px">
@@ -13,6 +13,8 @@
             <div fxLayout="row" fxLayoutAlign="end center" class="margin-bottom-3">
               <h3>
                 <button
+                  id="addPropertyButton"
+                  name="addPropertyButton"
                   type="button"
                   mat-button
                   button
@@ -31,6 +33,7 @@
               class="no-pointer margin-bottom-2 cursor-default"
               *ngFor="let propName of SortedProperties; let i = index"
               dnd-sortable
+              [id]="'propertyControl' + i"
               [sortableIndex]="i"
               (dragend)="SortSuccess()"
             >
@@ -47,6 +50,7 @@
                     <lcu-edit-controls
                       [is-editing]="IsEditingSettings(prop)"
                       [prop]="prop"
+                      [id]="propName + 'propName'"
                       [prop-name]="propName"
                       (add-property)="AddNestedProperty(i, propName)"
                       (close-edit-control)="CloseEditControl()"
@@ -60,6 +64,7 @@
                     <div fxFlex="auto">
                       <lcu-schema-properties
                         [is-editing]="IsEditingSettings(prop)"
+                        [id]="propName + 'propName'"
                         [prop]="prop"
                         [prop-name]="propName"
                         [schema]="Schema"
@@ -68,7 +73,13 @@
                     </div>
   
                     <div fxLayout="row" fxLayoutAlign="end center">
-                      <lcu-edit-drag [prop]="prop" [is-editing]="!IsEditingSettings(prop)" (editing-settings)="SetEditingSettings(prop)">
+                      <lcu-edit-drag 
+                        [id]="propName + 'propName'"
+                        [prop]="prop" 
+                        [prop-name]="propName"
+                        [prop-index]="i"
+                        [is-editing]="!IsEditingSettings(prop)" 
+                        (editing-settings)="SetEditingSettings(prop)">
                       </lcu-edit-drag>
                     </div>
                   </div>
@@ -81,12 +92,14 @@
       </mat-card>
   
       <!--Schema View-->
-      <lcu-schema-view fxFlex [schema]="Schema" *ngIf="!IsChildSchema"></lcu-schema-view>
+      <lcu-schema-view id="schemaView" name="schemaView" fxFlex [schema]="Schema" *ngIf="!IsChildSchema"></lcu-schema-view>
     </div>
     <mat-card class="margin-1" *ngIf="ShowSaveButton">
       <mat-card-content>
           <div fxFlex fxLayoutAlign="end center">
               <button 
+                id="saveButton"
+                name="saveButton"
                 type="button" 
                 mat-raised-button 
                 color="accent" 

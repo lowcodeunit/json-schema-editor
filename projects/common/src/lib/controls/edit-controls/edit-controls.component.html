@@ -2,6 +2,8 @@
     <ng-container *ngIf="IsEditing">
       <div *ngIf="IsEditing" (click)="Remove()">
         <button 
+          [id]="'deleteButton' + PropName"
+          [name]="'deleteButton' + PropName"
           type="button" 
           mat-button 
           color="warn"
@@ -23,6 +25,8 @@
 
       <div (click)="Save()">
         <button 
+          [id]="'saveButton' + PropName"
+          [name]="'saveButton' + PropName"
           type="button" 
           mat-button 
           color="accent"
@@ -34,6 +38,8 @@
 
       <div (click)="Close()">
         <button 
+          [id]="'cancelButton' + PropName"
+          [name]="'cancelButton' + PropName"
           type="button" 
           mat-button 
           color="accent"

@@ -4,16 +4,30 @@
       <mat-card-subtitle class="plain-text">Modified Schema</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <pre>{{Schema | json}}</pre>
-    <!-- <mat-form-field appearance="outline" style="width: 400px">
-      <mat-label>JSON Schema</mat-label>
-      <textarea
-          [(ngModel)]="Schema"
+    <div fxLayout="row" fxLayoutGap="10px">
+      <pre id="modifiedSchema" name="modifiedSchema" *ngIf="!EditSchema">{{Schema | json}}</pre>
+      <!-- <mat-form-field *ngIf="EditSchema" appearance="outline" fxFlex>
+        <mat-label>JSON Schema</mat-label>
+        <textarea
+          [(ngModel)]="SchemaString"
           matInput
           cdkTextareaAutosize
           cdkAutosizeMinRows="25"
           cdkAutosizeMaxRows="25">
-      </textarea>
-  </mat-form-field> -->
+        </textarea>
+    </mat-form-field> -->
+    <!-- <div fxFlex="5" fxLayoutAlign="end start">
+      <button 
+        type="button" 
+        mat-button 
+        color="accent" 
+        matTooltip="{{EditTooltip}}" 
+        matTooltipPosition="above"
+        (click)="Edit()">
+        <mat-icon *ngIf="!EditSchema">edit</mat-icon>
+        <mat-icon color="warn" *ngIf="EditSchema">close</mat-icon>
+      </button>
+    </div> -->
+  </div>
   </mat-card-content>
 </mat-card>
