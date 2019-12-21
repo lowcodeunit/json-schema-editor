@@ -1,6 +1,8 @@
 <div *ngIf="IsEditing" fxLayout="row">
   <div dnd-sortable-handle>
     <button 
+      [id]="'dragButton' + PropName"
+      [name]="'dragButton' + PropName"
       type="button" 
       mat-button color="accent"
       matTooltip="Drag to Reorder Property" 
@@ -11,6 +13,8 @@
 
   <div (click)="SetEditingSettings(Prop)">
     <button 
+      [id]="'editButton' + PropName"
+      [name]="'editButton' + PropName"
       type="button" 
       mat-button 
       color="accent"

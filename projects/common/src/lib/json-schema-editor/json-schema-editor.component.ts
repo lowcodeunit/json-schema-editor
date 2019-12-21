@@ -25,19 +25,19 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     private _schema: JSONSchema;
     @Input('schema')
-    public get Schema(): JSONSchema {
-      return this._schema;
-    }
-
     public set Schema(schema: JSONSchema) {
       this._schema = schema;
-
+     
       if (!schema) {
         return;
       }
 
       this.EmitChange();
       this.PivotProperties();
+    }
+
+    public get Schema(): JSONSchema {
+      return this._schema;
     }
 
     @Input('show-save-button')

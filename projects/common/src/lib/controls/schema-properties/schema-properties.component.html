@@ -5,6 +5,7 @@
       <input
         type="text"
         matInput
+        [id]="PropName + 'PropName'"
         [name]="PropName + 'PropName'"
         [value]="PropName"
         placeholder="Property Name"
@@ -18,6 +19,7 @@
       <input
         type="text"
         matInput
+        [id]="PropName + 'PropName'"
         [name]="PropName + 'PropName'"
         [(ngModel)]="Prop.description"
         placeholder="Property Description"
@@ -30,6 +32,7 @@
       <input
         type="text"
         matInput
+        [id]="PropName + 'PropName'"
         [name]="PropName + 'PropName'"
         [(ngModel)]="Prop.minimum"
         placeholder="Property Minimum"
@@ -40,7 +43,7 @@
 
     <div [fxShow]="IsEditing">
       <div>
-        <lcu-data-type-select [prop]="Prop" [prop-name]="PropName"> </lcu-data-type-select>
+        <lcu-data-type-select [id]="PropName + 'Select'" name="PropName + 'Select'" [prop]="Prop" [prop-name]="PropName"> </lcu-data-type-select>
         <!--<mat-checkbox [(ngModel)]="Prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropId'">
             Is Identifier
           </mat-checkbox>-->
@@ -55,7 +58,7 @@
       <!-- </div> -->
 
       <div *ngIf="Prop.type === 'object'">
-        <lcu-json-schema-editor [(schema)]="Prop" [child-schema]="true"> </lcu-json-schema-editor>
+        <lcu-json-schema-editor [id]="PropName + 'ObjectProperty'" name="PropName + 'ObjectProperty'" [(schema)]="Prop" [child-schema]="true"> </lcu-json-schema-editor>
       </div>
     </div>
   </div>

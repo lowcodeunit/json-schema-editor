@@ -20,6 +20,15 @@ export class EditDragComponent implements OnInit {
   @Input('prop')
   public Prop: any;
 
+  @Input('prop-index')
+  public PropIndex: number;
+
+  /**
+   * Current property name
+   */
+  @Input('prop-name')
+  public PropName: string;
+
   /**
    * Event for setting up editing
    */
