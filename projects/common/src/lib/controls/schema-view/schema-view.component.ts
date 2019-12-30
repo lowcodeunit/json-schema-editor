@@ -31,15 +31,15 @@ export class SchemaViewComponent implements OnInit {
   /**
    * Schema as a string
    */
-  // private _schemaString: string;
-  // public set SchemaString(val: string) {
-  //   this._schemaString = val;
-  //   this.schemaStringChange(val);
-  // }
+  private _schemaString: string;
+  public set SchemaString(val: string) {
+    this._schemaString = val;
+    this.schemaStringChange(val);
+  }
 
-  // public get SchemaString(): string {
-  //   return this._schemaString;
-  // }
+  public get SchemaString(): string {
+    return this._schemaString;
+  }
 
   /**
    * Edit button Tooltip message
@@ -47,7 +47,9 @@ export class SchemaViewComponent implements OnInit {
   public EditTooltip: string;
 
 
-  constructor() {}
+  constructor() {
+    this.EditTooltip = 'Edit Schema';
+  }
 
   ngOnInit() {}
 
@@ -63,13 +65,17 @@ export class SchemaViewComponent implements OnInit {
    * Edit schema
    */
   public Edit(): void {
-  //   this.EditSchema = !this.EditSchema;
+    this.EditSchema = !this.EditSchema;
 
-  //   if (this.EditSchema) {
-  //     this.EditTooltip = 'Cancel Edit';
-  //     this.SchemaString = JSON.stringify(this.Schema, null, 5);
-  //   } else {
-  //     this.EditTooltip = 'Edit Schema';
-  //   }
+    if (this.EditSchema) {
+      this.EditTooltip = 'Cancel Edit';
+      this.SchemaString = JSON.stringify(this.Schema, null, 5);
+    } else {
+      this.EditTooltip = 'Edit Schema';
+    }
+  }
+
+  public SchemaViewChanged(evt: Event): void {
+    console.log('evt', evt);
   }
 }
