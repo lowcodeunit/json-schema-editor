@@ -96,7 +96,7 @@ export class SchemaPropertyControlComponent implements OnInit {
   /**
    * Schema changed event
    */
-  // protected schemaChangeSubscription: Subscription;
+  // 
 
   constructor(protected schemaEventsService: SchemaEventsService) { }
 
