@@ -1,33 +1,42 @@
 <mat-card>
   <mat-card-header>
-      <mat-card-title class="paragraph-title">Schema View</mat-card-title>
-      <mat-card-subtitle class="plain-text">Modified Schema</mat-card-subtitle>
+    <div fxFlex fxLayout="row">
+      <div>
+        <mat-card-title class="paragraph-title">Schema View</mat-card-title>
+        <mat-card-subtitle class="plain-text">{{SubTitle}}</mat-card-subtitle>
+      </div>
+      <div fxFlex fxLayoutAlign="end">
+        <button 
+          id="editSchemaViewButton"
+          name="editSchemaViewButton"
+          type="button" 
+          mat-button 
+          color="accent" 
+          matTooltip="{{EditTooltip}}" 
+          matTooltipPosition="above"
+          (click)="Edit()">
+          <mat-icon *ngIf="!EditSchema">edit</mat-icon>
+          <mat-icon color="warn" *ngIf="EditSchema">close</mat-icon>
+        </button>
+      </div>
+    </div>
   </mat-card-header>
   <mat-card-content>
     <div fxLayout="row" fxLayoutGap="10px">
       <pre id="modifiedSchema" name="modifiedSchema" *ngIf="!EditSchema">{{Schema | json}}</pre>
-      <!-- <mat-form-field *ngIf="EditSchema" appearance="outline" fxFlex>
+      <mat-form-field *ngIf="EditSchema" appearance="outline" fxFlex>
         <mat-label>JSON Schema</mat-label>
         <textarea
-          [(ngModel)]="SchemaString"
+          id="schemaView"
+          name="schemaView"
+          (ngModelChange)="SchemaViewChanged($event)"
+          [ngModel]="SchemaString"
           matInput
           cdkTextareaAutosize
           cdkAutosizeMinRows="25"
           cdkAutosizeMaxRows="25">
         </textarea>
-    </mat-form-field> -->
-    <!-- <div fxFlex="5" fxLayoutAlign="end start">
-      <button 
-        type="button" 
-        mat-button 
-        color="accent" 
-        matTooltip="{{EditTooltip}}" 
-        matTooltipPosition="above"
-        (click)="Edit()">
-        <mat-icon *ngIf="!EditSchema">edit</mat-icon>
-        <mat-icon color="warn" *ngIf="EditSchema">close</mat-icon>
-      </button>
-    </div> -->
+    </mat-form-field>
   </div>
   </mat-card-content>
 </mat-card>

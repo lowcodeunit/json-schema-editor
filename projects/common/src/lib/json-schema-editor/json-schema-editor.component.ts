@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { JSONSchema } from '@lcu/common';
 import { FormBuilder } from '@angular/forms';
 import { SchemaEventsService } from '../services/schema-events.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'lcu-json-schema-editor',
@@ -14,20 +15,32 @@ export class JSONSchemaEditorComponent implements OnInit {
     // 	Properties
     public CurrentlyEditingSettingsFor: JSONSchema;
 
+    /**
+     * Output event when save button is clicked
+     */
     @Output('save-schema')
     public SaveSchema: EventEmitter<JSONSchema>;
 
+    /**
+     * Output event when schema changes
+     */
     @Output('schema-changed')
     public SchemaChanged: EventEmitter<JSONSchema>;
 
+    /**
+     * Input property for identifying a child schema
+     */
     @Input('child-schema')
     public IsChildSchema: boolean;
 
+    /**
+     * Input property for current schema
+     */
     private _schema: JSONSchema;
     @Input('schema')
     public set Schema(schema: JSONSchema) {
       this._schema = schema;
-     
+
       if (!schema) {
         return;
       }
@@ -40,12 +53,21 @@ export class JSONSchemaEditorComponent implements OnInit {
       return this._schema;
     }
 
+    /**
+     * Input property to hide/show save button
+     */
     @Input('show-save-button')
     public ShowSaveButton: boolean;
 
+    /**
+     * Input property to hide/show validation
+     */
     @Input('show-validations')
     public ShowValidations: boolean;
 
+    /**
+     * Property name field value
+     */
     private _propNameFldValue: string;
     get PropNameFldValue(): string {
       return this._propNameFldValue;
@@ -60,9 +82,14 @@ export class JSONSchemaEditorComponent implements OnInit {
      */
     public SortedProperties: Array<string>;
 
+    /**
+     * Schema change subscription
+     */
+    protected schemaChangeSubscription: Subscription;
+
     // 	Constructors
     constructor(
-      protected formBuilder: FormBuilder, 
+      protected formBuilder: FormBuilder,
       protected schemaEventService: SchemaEventsService) {
       this.SchemaChanged = new EventEmitter();
       this.SaveSchema = new EventEmitter();
@@ -70,16 +97,13 @@ export class JSONSchemaEditorComponent implements OnInit {
 
     // 	Runtime
     public ngOnInit() {
-      // if (!this.Schema) {
-        // this.Schema = { properties: {} } as JSONSchema;
-        // this.EmitChange();
-      // }
 
-      // if (!this.Schema.properties) {
-      //   this.Schema.properties = {};
-
-      //   this.EmitChange();
-      // }
+      /**
+       * subscribe to schema changes
+       */
+      this.schemaChangeSubscription = this.schemaEventService.SchemaChangedEvent.subscribe((data: JSONSchema) => {
+        this.Schema = data;
+      });
     }
 
     // 	API Methods
@@ -116,39 +140,35 @@ export class JSONSchemaEditorComponent implements OnInit {
     }
 
     /**
-     * Add a new nested property
-     *
-     * @param idx parent property index
-     *
-     * @param parentPropertyName parent property name
+     * Emit schema changed event for those listening
      */
-    // may not need to do this -shannon
-    public AddNestedProperty(idx: number, parentPropertyName: string): void {
-    //   const prop = {} as JSONSchema;
-    //   prop['isChild'] = true;
-    //   const parentProperty: any = this.Schema.properties[parentPropertyName];
-    //   const parentKeys: Array<string> = Object.keys(this.Schema.properties[parentPropertyName]);
-    //   const index: number = parentKeys.length;
-
-    //   this.Schema.properties[parentPropertyName]['Child'] = prop;
-
-    //   this.SetEditingSettings(prop);
-    }
-
     public EmitChange() {
       this.SchemaChanged.emit(this.Schema);
     }
 
+    /**
+     * Is the property being edited
+     *
+     * @param prop schema
+     */
     public IsEditingSettings(prop: JSONSchema) {
       return this.CurrentlyEditingSettingsFor === prop;
     }
 
+    /**
+     * Get schema property names
+     */
     public PivotProperties() {
       if (this.Schema && this.Schema.properties) {
        this.SortedProperties = Object.keys(this.Schema.properties);
       }
     }
 
+    /**
+     * Delete property
+     *
+     * @param propIndex Index position of selected property
+     */
     public RemoveProperty(propIndex: string) {
       let msg = 'Are you sure you want to delete this property?';
       const propName: string = Object.keys(this.Schema.properties)[propIndex];
@@ -168,6 +188,15 @@ export class JSONSchemaEditorComponent implements OnInit {
       }
     }
 
+    /**
+     * Update selected property
+     *
+     * @param propName property name
+     *
+     * @param prop property object
+     *
+     * @param newPropName new property name
+     */
     public SaveProperty(propName: string, prop: JSONSchema, newPropName: string) {
       this.SetEditingSettings(prop);
 
@@ -195,6 +224,9 @@ export class JSONSchemaEditorComponent implements OnInit {
       this.SaveSchema.emit(this.Schema);
     }
 
+    /**
+     * Close property edit control
+     */
     public CloseEditControl(): void {
       this.CurrentlyEditingSettingsFor = null;
     }
@@ -207,6 +239,9 @@ export class JSONSchemaEditorComponent implements OnInit {
       }
     }
 
+    /**
+     * After successfully changing the order of properties
+     */
     public SortSuccess() {
       const tmpProps = {};
 
