@@ -52,7 +52,6 @@
                       [prop]="prop"
                       [id]="propName + 'propName'"
                       [prop-name]="propName"
-                      (add-property)="AddNestedProperty(i, propName)"
                       (close-edit-control)="CloseEditControl()"
                       (remove-property)="RemoveProperty(i)"
                       (save-property)="SaveProperty(propName, prop, PropNameFldValue)">
@@ -67,6 +66,7 @@
                         [id]="propName + 'propName'"
                         [prop]="prop"
                         [prop-name]="propName"
+                        [prop-index]="i"
                         [schema]="Schema"
                         (prop-name-changed)="PropertyNameChanged($event)">
                       </lcu-schema-properties>

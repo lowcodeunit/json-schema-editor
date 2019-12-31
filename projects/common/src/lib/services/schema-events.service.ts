@@ -23,27 +23,27 @@ export class SchemaEventsService {
 
     public AddNestedProperty(idx: number, propertyName: string): void {
         // this.ForecastPlotDataChanged.next({ ...params });
-        this.AddNestedPropertyEvent.next({ idx: idx, propertyName: propertyName });
+        // this.AddNestedPropertyEvent.next({ idx: idx, propertyName: propertyName });
     }
 
     public CloseEditControl(): void {
-        this.CloseEditControlEvent.next();
+        // this.CloseEditControlEvent.next();
     }
 
     public RemoveProperty(idx: number): void {
-        this.RemovePropertyEvent.next(idx);
+        // this.RemovePropertyEvent.next(idx);
     }
 
     public SaveProperty(propName: string, prop: any, PropNameFldValue: string): void {
-        this.SavePropertyEvent.next({ propName: propName, prop: prop, PropNameFldValue: PropNameFldValue });
+        // this.SavePropertyEvent.next({ propName: propName, prop: prop, PropNameFldValue: PropNameFldValue });
     }
 
     public EditSettings(params: any): void {
-        this.EditSettingsEvent.next();
+        // this.EditSettingsEvent.next();
     }
 
     public PropNameChanged(param: any): void {
-        this.PropNameChangedEvent.next({ ...param });
+        // this.PropNameChangedEvent.next({ ...param });
     }
 
     public SchemaChanged(param: JSONSchema): void {

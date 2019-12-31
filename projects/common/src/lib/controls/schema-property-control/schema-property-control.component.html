@@ -1,4 +1,4 @@
-<mat-card
+<!-- <mat-card
         class="no-pointer margin-bottom-2 cursor-default"
         *ngFor="let propName of SortedProperties; let i = index"
         dnd-sortable
@@ -13,7 +13,7 @@
                   <lcu-schema-properties 
                     [is-editing]="IsEditing"
                     [prop]="prop"
-                    [prop-name]="propName"
+                    [prop-name]="propName + i"
                     (prop-name-changed)="PropertyNameChanged($event)">
                 </lcu-schema-properties>
               </div>
@@ -38,4 +38,4 @@
             </div>
           </mat-card-content>
         </ng-container>
-      </mat-card>
+      </mat-card> -->

@@ -19,8 +19,8 @@
       <input
         type="text"
         matInput
-        [id]="PropName + 'PropName'"
-        [name]="PropName + 'PropName'"
+        [id]="PropName + 'Description'"
+        [name]="PropName + 'Description'"
         [(ngModel)]="Prop.description"
         placeholder="Property Description"
         required
@@ -32,8 +32,8 @@
       <input
         type="text"
         matInput
-        [id]="PropName + 'PropName'"
-        [name]="PropName + 'PropName'"
+        [id]="PropName + 'Minimum'"
+        [name]="PropName + 'Minimum'"
         [(ngModel)]="Prop.minimum"
         placeholder="Property Minimum"
         required
@@ -44,7 +44,7 @@
     <div [fxShow]="IsEditing">
       <div>
         <lcu-data-type-select [id]="PropName + 'Select'" name="PropName + 'Select'" [prop]="Prop" [prop-name]="PropName"> </lcu-data-type-select>
-        <!--<mat-checkbox [(ngModel)]="Prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropId'">
+        <!--<mat-checkbox [(ngModel)]="Prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey.Name + 'PropId'">
             Is Identifier
           </mat-checkbox>-->
       </div>
@@ -52,7 +52,7 @@
       <!-- <div *ngIf="ShowValidations">
             <h4>Validations</h4> -->
 
-      <!--<mat-checkbox [(ngModel)]="Prop.Required" (change)="EmitChange()" [name]="PropertyKey + Prop.Name + 'PropRequired'">
+      <!--<mat-checkbox [(ngModel)]="Prop.Required" (change)="EmitChange()" [name]="PropertyKey.Name + 'PropRequired'">
             Required
           </mat-checkbox>-->
       <!-- </div> -->

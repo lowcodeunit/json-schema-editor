@@ -3,7 +3,7 @@
     <div fxFlex fxLayout="row">
       <div>
         <mat-card-title class="paragraph-title">Schema View</mat-card-title>
-        <mat-card-subtitle class="plain-text">Modified Schema</mat-card-subtitle>
+        <mat-card-subtitle class="plain-text">{{SubTitle}}</mat-card-subtitle>
       </div>
       <div fxFlex fxLayoutAlign="end">
         <button 
@@ -25,9 +25,12 @@
     <div fxLayout="row" fxLayoutGap="10px">
       <pre id="modifiedSchema" name="modifiedSchema" *ngIf="!EditSchema">{{Schema | json}}</pre>
       <mat-form-field *ngIf="EditSchema" appearance="outline" fxFlex>
-        <mat-label>Edit JSON Schema</mat-label>
+        <mat-label>JSON Schema</mat-label>
         <textarea
-          [(ngModel)]="SchemaString"
+          id="schemaView"
+          name="schemaView"
+          (ngModelChange)="SchemaViewChanged($event)"
+          [ngModel]="SchemaString"
           matInput
           cdkTextareaAutosize
           cdkAutosizeMinRows="25"

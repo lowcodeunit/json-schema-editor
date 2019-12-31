@@ -1,5 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { JSONSchema } from '@lcu/common';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { SchemaEventsService } from '../../services/schema-events.service';
 
 @Component({
   selector: 'lcu-schema-view',
@@ -28,13 +30,16 @@ export class SchemaViewComponent implements OnInit {
     return this._editSchema;
   }
 
+  @Output('schema-changed')
+  public SchemaChanged: EventEmitter<JSONSchema>;
+
   /**
    * Schema as a string
    */
   private _schemaString: string;
   public set SchemaString(val: string) {
     this._schemaString = val;
-    this.schemaStringChange(val);
+   // this.schemaStringChange(val);
   }
 
   public get SchemaString(): string {
@@ -46,12 +51,19 @@ export class SchemaViewComponent implements OnInit {
    */
   public EditTooltip: string;
 
+  /**
+   * Card subtitle
+   */
+  public SubTitle: string;
 
-  constructor() {
+  constructor(protected schemaEventsService: SchemaEventsService) {
     this.EditTooltip = 'Edit Schema';
+    this.SubTitle = 'Modified Schema';
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
 
   /**
    * When changing schema string
@@ -69,13 +81,20 @@ export class SchemaViewComponent implements OnInit {
 
     if (this.EditSchema) {
       this.EditTooltip = 'Cancel Edit';
+      this.SubTitle = 'Directly Editable Schema';
       this.SchemaString = JSON.stringify(this.Schema, null, 5);
     } else {
       this.EditTooltip = 'Edit Schema';
+      this.SubTitle = 'Modified Schema';
     }
   }
 
-  public SchemaViewChanged(evt: Event): void {
-    console.log('evt', evt);
-  }
+  /**
+   * Event when schema is directly edited
+   *
+   * @param stringSchema schema as a string
+   */
+  public SchemaViewChanged(stringSchema: string): void {
+    this.schemaEventsService.SchemaChanged(JSON.parse(stringSchema));
+    }
 }

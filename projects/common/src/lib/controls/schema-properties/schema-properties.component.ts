@@ -32,6 +32,15 @@ export class SchemaPropertiesComponent implements OnInit {
     return this._propName;
   }
 
+  private _propIndex: string;
+  @Input('prop-index')
+  public set PropIndex(val: string) {
+    this._propIndex = val;
+  }
+  public get PropIndex(): string {
+    return this._propIndex;
+  }
+
   /**
    * Current schema
    */
