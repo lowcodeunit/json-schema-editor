@@ -1,3 +1,4 @@
+import { JSONSchema } from '@lcu/common';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
@@ -42,7 +43,7 @@ export class EditDragComponent implements OnInit {
   ngOnInit() {
   }
 
-  public SetEditingSettings(prop): void {
+  public SetEditingSettings(prop: JSONSchema): void {
     this.EditingSettings.emit(prop);
   }
 

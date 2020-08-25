@@ -10,3 +10,5 @@ export * from './lib/directives/emit-event.directive';
 export * from './lib/utils/constants.utils';
 export * from './lib/services/theme-color-picker.service';
 export * from './lib/controls/schema-property-control/schema-property-control.component';
+export * from './lib/controls/schema-keywords/schema-keywords.component';
+export * from './lib/controls/data-type-select/data-type-select.component';
